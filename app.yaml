@@ -13,6 +13,4 @@ env:
   - name: DATABRICKS_SCHEMA
     value: menu_grading
   - name: ANTHROPIC_API_KEY
-    valueFrom:
-      secretScope: menu-grading-secrets
-      secretKey: anthropic-api-key
+    valueFrom: anthropic-api-key
