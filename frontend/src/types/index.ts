@@ -32,6 +32,24 @@ export interface ItemGrade {
   issues: string[];
 }
 
+export interface IssueEntry {
+  item: string;
+  detail: string;
+  field?: string;
+}
+
+export type IssueValue = IssueEntry[] | number;
+
+export interface ReportIssues {
+  price_discrepancies: IssueValue;
+  capitalization_errors: IssueValue;
+  modifier_issues: IssueValue;
+  duplicates: IssueValue;
+  missing_items: IssueValue;
+  extra_items: IssueValue;
+  [key: string]: IssueValue;
+}
+
 export interface GradingReport {
   id: string;
   merchant_name: string;
@@ -45,14 +63,7 @@ export interface GradingReport {
     thoroughness: SectionScore;
   };
   item_grades: ItemGrade[];
-  issues: {
-    price_discrepancies: number;
-    capitalization_errors: number;
-    modifier_issues: number;
-    duplicates: number;
-    missing_items: number;
-    extra_items: number;
-  };
+  issues: ReportIssues;
   builder_name: string;
   builder_email: string;
   builder_team: string | null;
