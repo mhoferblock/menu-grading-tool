@@ -9,4 +9,4 @@ fuzzywuzzy==0.18.0
 python-Levenshtein==0.25.1
 structlog==24.4.0
 resend==2.4.0
-squareup==38.1.0
+squareup>=44.0.0
