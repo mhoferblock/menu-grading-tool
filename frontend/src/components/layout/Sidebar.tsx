@@ -23,11 +23,11 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="flex h-screen w-60 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950">
+    <aside className="flex h-screen w-60 shrink-0 flex-col border-r border-[#E5E5E5] bg-white">
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-5 py-5">
-        <ClipboardList className="h-5 w-5 text-blue-500" />
-        <span className="text-sm font-semibold tracking-tight text-zinc-100">
+        <ClipboardList className="h-5 w-5 text-[#006AFF]" />
+        <span className="text-sm font-semibold tracking-tight text-[#1A1A1A]">
           Menu Grading Tool
         </span>
       </div>
@@ -41,10 +41,10 @@ export default function Sidebar() {
             end={to === '/'}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive
-                  ? 'border-l-2 border-blue-500 bg-zinc-800 text-white'
-                  : 'text-zinc-400 hover:bg-zinc-800/50 hover:text-zinc-200',
+                  ? 'border-l-2 border-[#006AFF] bg-[#E6F2FF] text-[#006AFF]'
+                  : 'text-[#4A4A4A] hover:bg-[#F6F6F6] hover:text-[#1A1A1A]',
               )
             }
           >
@@ -55,8 +55,8 @@ export default function Sidebar() {
       </nav>
 
       {/* User */}
-      <div className="border-t border-zinc-800 px-5 py-4">
-        <p className="truncate text-xs text-zinc-500">user@squareup.com</p>
+      <div className="border-t border-[#E5E5E5] px-5 py-4">
+        <p className="truncate text-xs text-[#8A8A8A]">user@squareup.com</p>
       </div>
     </aside>
   );

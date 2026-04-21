@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 shadow">
+    <div className="rounded-lg border border-[#E5E5E5] bg-white px-3 py-2 text-sm text-[#1A1A1A] shadow">
       {label && <p className="mb-1 font-medium">{label}</p>}
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color }}>{p.name}: {p.value}</p>
@@ -38,19 +38,19 @@ const scoreDist = [
 ];
 
 function scoreColor(score: number) {
-  if (score >= 90) return 'text-emerald-400';
-  if (score >= 75) return 'text-amber-400';
-  if (score >= 60) return 'text-orange-400';
-  return 'text-red-400';
+  if (score >= 90) return 'text-[#00D632]';
+  if (score >= 75) return 'text-[#FF9500]';
+  if (score >= 60) return 'text-[#FF9500]';
+  return 'text-[#E02B1D]';
 }
 
 function feedbackBadge(feedback: string, tone: string) {
   const base = 'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium';
-  if (tone === 'success') return `${base} bg-emerald-500/10 text-emerald-400`;
-  if (tone === 'warning') return `${base} bg-amber-500/10 text-amber-400`;
-  if (tone === 'danger') return `${base} bg-red-500/10 text-red-400`;
-  if (feedback === 'Sent') return `${base} bg-emerald-500/10 text-emerald-400`;
-  return `${base} bg-zinc-700/40 text-zinc-400`;
+  if (tone === 'success') return `${base} bg-[#00D632]/10 text-[#00D632]`;
+  if (tone === 'warning') return `${base} bg-[#FF9500]/10 text-[#FF9500]`;
+  if (tone === 'danger') return `${base} bg-[#E02B1D]/10 text-[#E02B1D]`;
+  if (feedback === 'Sent') return `${base} bg-[#00D632]/10 text-[#00D632]`;
+  return `${base} bg-[#F6F6F6] text-[#8A8A8A]`;
 }
 
 /* ─── Page ────────────────────────────────────────────────────────── */
@@ -73,27 +73,27 @@ export default function History() {
     <div className="space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-zinc-100">Grading History</h1>
+        <h1 className="text-2xl font-bold text-[#1A1A1A]">Grading History</h1>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8A8A]" />
           <input
             type="text"
             placeholder="Search history…"
             aria-label="Search grading history"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="rounded-lg border border-zinc-800 bg-zinc-900 py-2 pl-9 pr-4 text-sm text-zinc-100 placeholder-zinc-500 outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600"
+            className="rounded-lg border border-[#E5E5E5] bg-white py-2 pl-9 pr-4 text-sm text-[#1A1A1A] placeholder-[#8A8A8A] outline-none focus:border-[#006AFF] focus:ring-1 focus:ring-[#006AFF]/10"
           />
         </div>
       </div>
 
       {/* History Table */}
-      <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+      <div className="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-sm">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="bg-zinc-800/50">
+            <tr className="bg-[#F6F6F6]">
               {['Date', 'Merchant', 'Builder', 'Graded By', 'Market', 'Score', 'Feedback'].map((h) => (
-                <th key={h} className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">{h}</th>
+                <th key={h} className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">{h}</th>
               ))}
             </tr>
           </thead>
@@ -102,18 +102,18 @@ export default function History() {
               <tr
                 key={i}
                 className={cn(
-                  'border-t border-zinc-800/50',
-                  r.tone === 'success' && 'bg-emerald-500/5',
-                  r.tone === 'warning' && 'bg-amber-500/5',
-                  r.tone === 'danger' && 'bg-red-500/5',
-                  !r.tone && i % 2 === 1 && 'bg-zinc-900/50',
+                  'border-t border-[#E5E5E5]',
+                  r.tone === 'success' && 'bg-[#00D632]/10',
+                  r.tone === 'warning' && 'bg-[#FF9500]/10',
+                  r.tone === 'danger' && 'bg-[#E02B1D]/10',
+                  !r.tone && i % 2 === 1 && 'bg-[#F6F6F6]/50',
                 )}
               >
-                <td className="px-4 py-3 text-zinc-400">{r.date}</td>
-                <td className="px-4 py-3 font-medium text-zinc-200">{r.merchant}</td>
-                <td className="px-4 py-3 text-zinc-300">{r.builder}</td>
-                <td className="px-4 py-3 text-zinc-400">{r.grader}</td>
-                <td className="px-4 py-3 text-zinc-400">{r.market}</td>
+                <td className="px-4 py-3 text-[#8A8A8A]">{r.date}</td>
+                <td className="px-4 py-3 font-medium text-[#1A1A1A]">{r.merchant}</td>
+                <td className="px-4 py-3 text-[#4A4A4A]">{r.builder}</td>
+                <td className="px-4 py-3 text-[#8A8A8A]">{r.grader}</td>
+                <td className="px-4 py-3 text-[#8A8A8A]">{r.market}</td>
                 <td className={cn('px-4 py-3 font-medium tabular-nums', scoreColor(r.score))}>
                   {r.score}/100
                 </td>
@@ -128,15 +128,15 @@ export default function History() {
 
       {/* Score Distribution Chart */}
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-zinc-200">Score Distribution (Last 30 Days)</h2>
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+        <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Score Distribution (Last 30 Days)</h2>
+        <div className="rounded-xl border border-[#E5E5E5] bg-white p-6 shadow-sm">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={scoreDist}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#71717a" vertical={false} />
-              <XAxis dataKey="range" stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
-              <YAxis stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" vertical={false} />
+              <XAxis dataKey="range" stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
+              <YAxis stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="count" name="Reports" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" name="Reports" fill="#006AFF" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

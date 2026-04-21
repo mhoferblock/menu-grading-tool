@@ -1,0 +1,93 @@
+---
+description: Square-inspired design system — default UI guidelines for all frontend projects
+globs: "**/*.tsx,**/*.css,**/*.ts"
+alwaysApply: false
+---
+
+# Square Design System
+
+All frontend UI should follow Square's design language: clean, minimal, light-themed with strong typography and generous whitespace.
+
+## Color Palette
+
+### Primary
+- **Square Blue**: `#006AFF` (CTAs, links, active states)
+- **Blue Hover**: `#0056CC`
+- **Blue Light**: `#E6F2FF` (subtle backgrounds, focus rings)
+
+### Neutrals
+- **Black**: `#1A1A1A` (headings)
+- **Dark Gray**: `#4A4A4A` (body text)
+- **Medium Gray**: `#8A8A8A` (secondary text, placeholders)
+- **Border Gray**: `#E5E5E5` (borders, dividers)
+- **Background**: `#F6F6F6` (subtle section backgrounds)
+- **White**: `#FFFFFF` (primary background, cards)
+
+### Status
+- **Success**: `#00D632` (green accents, positive scores)
+- **Warning**: `#FF9500` (amber alerts)
+- **Danger**: `#E02B1D` (errors, critical issues)
+- **Info**: `#006AFF` (same as primary blue)
+
+## Typography
+- **Font stack**: `"Square Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`
+- Headings: **700** weight, `#1A1A1A`
+- Body: **400** weight, `#4A4A4A`
+- Small/labels: **500** weight, `#8A8A8A`
+
+## Components
+
+### Buttons
+- **Primary**: `bg-[#006AFF] text-white rounded-full px-6 py-3 font-semibold hover:bg-[#0056CC]`
+- **Secondary**: `bg-white text-[#006AFF] border-2 border-[#006AFF] rounded-full px-6 py-3 font-semibold`
+- **Ghost**: `text-[#4A4A4A] hover:bg-[#F6F6F6] rounded-lg px-4 py-2`
+- Always pill-shaped (rounded-full) for primary/secondary CTAs
+
+### Cards
+- `bg-white rounded-2xl border border-[#E5E5E5] p-6 shadow-sm`
+- Hover: `shadow-md -translate-y-0.5 transition-all duration-200`
+
+### Inputs
+- `bg-white border border-[#E5E5E5] rounded-lg px-4 py-3 text-[#1A1A1A]`
+- Focus: `border-[#006AFF] ring-2 ring-[#006AFF]/10`
+- Placeholder: `text-[#8A8A8A]`
+
+### Tables
+- Header: `bg-[#F6F6F6] text-[#8A8A8A] text-xs uppercase tracking-wider font-medium`
+- Rows: `border-b border-[#E5E5E5] hover:bg-[#F6F6F6]/50`
+- Text: `text-[#1A1A1A]` for primary, `text-[#4A4A4A]` for secondary
+
+### Navigation
+- Sidebar: `bg-white border-r border-[#E5E5E5]`
+- Active link: `bg-[#E6F2FF] text-[#006AFF] font-medium border-l-2 border-[#006AFF]`
+- Inactive: `text-[#4A4A4A] hover:bg-[#F6F6F6]`
+
+## Spacing
+- 8px grid system. Use Tailwind: `p-2` (8px), `p-4` (16px), `p-6` (24px), `p-8` (32px)
+- Section gaps: `space-y-8` or `gap-8`
+- Card padding: `p-6` minimum
+
+## Borders & Radius
+- Small: `rounded-lg` (8px) — inputs, small cards
+- Medium: `rounded-xl` (12px) — cards
+- Large: `rounded-2xl` (16px) — feature cards
+- Buttons: `rounded-full` (pill)
+
+## Shadows
+- Subtle: `shadow-sm` (cards at rest)
+- Elevated: `shadow-md` (card hover, dropdowns)
+- Modal: `shadow-xl`
+
+## Score Colors (for grading/analytics UIs)
+- Excellent (>=90): `text-[#00D632]` with `bg-[#00D632]/10`
+- Good (>=80): `text-[#006AFF]` with `bg-[#006AFF]/10`
+- Fair (>=70): `text-[#FF9500]` with `bg-[#FF9500]/10`
+- Needs Work (<70): `text-[#E02B1D]` with `bg-[#E02B1D]/10`
+
+## Chart Colors
+- Primary: `#006AFF`
+- Secondary: `#00D632`
+- Tertiary: `#FF9500`
+- Quaternary: `#E02B1D`
+- Fifth: `#8B5CF6`
+- Grid/axis: `#E5E5E5`, tick labels `#8A8A8A`

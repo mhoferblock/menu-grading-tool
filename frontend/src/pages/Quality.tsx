@@ -16,12 +16,12 @@ const SUB_TABS: { key: SubTab; label: string }[] = [
   { key: 'profile', label: 'Builder Profile' },
 ];
 
-const PIE_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+const PIE_COLORS = ['#006AFF', '#00D632', '#FF9500', '#E02B1D', '#8B5CF6'];
 
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 shadow">
+    <div className="rounded-lg border border-[#E5E5E5] bg-white px-3 py-2 text-sm text-[#1A1A1A] shadow">
       {label && <p className="mb-1 font-medium">{label}</p>}
       {payload.map((p, i) => (
         <p key={i} style={{ color: p.color }}>{p.name}: {p.value}</p>
@@ -64,13 +64,13 @@ function BuilderQuality() {
       </div>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-zinc-200">Builder Scores (Last 30 Days)</h2>
-        <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+        <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Builder Scores (Last 30 Days)</h2>
+        <div className="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-sm">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="bg-zinc-800/50">
+              <tr className="bg-[#F6F6F6]">
                 {['Builder', 'Team', 'Menus', 'Avg Score', 'Trend', 'Top Issue'].map((h) => (
-                  <th key={h} className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">{h}</th>
+                  <th key={h} className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -79,19 +79,19 @@ function BuilderQuality() {
                 <tr
                   key={r.builder}
                   className={cn(
-                    'border-t border-zinc-800/50',
-                    r.tone === 'success' && 'bg-emerald-500/5',
-                    r.tone === 'warning' && 'bg-amber-500/5',
-                    r.tone === 'danger' && 'bg-red-500/5',
-                    !r.tone && i % 2 === 1 && 'bg-zinc-900/50',
+                    'border-t border-[#E5E5E5]',
+                    r.tone === 'success' && 'bg-[#00D632]/10',
+                    r.tone === 'warning' && 'bg-[#FF9500]/10',
+                    r.tone === 'danger' && 'bg-[#E02B1D]/10',
+                    !r.tone && i % 2 === 1 && 'bg-[#F6F6F6]/50',
                   )}
                 >
-                  <td className="px-4 py-3 font-medium text-zinc-200">{r.builder}</td>
-                  <td className="px-4 py-3 text-zinc-400">{r.team}</td>
-                  <td className="px-4 py-3 tabular-nums text-zinc-300">{r.menus}</td>
+                  <td className="px-4 py-3 font-medium text-[#1A1A1A]">{r.builder}</td>
+                  <td className="px-4 py-3 text-[#8A8A8A]">{r.team}</td>
+                  <td className="px-4 py-3 tabular-nums text-[#4A4A4A]">{r.menus}</td>
                   <td className={cn('px-4 py-3 font-medium tabular-nums', scoreColor(r.avg))}>{r.avg}</td>
                   <td className={cn('px-4 py-3 text-sm', trendColor(r.trend))}>{r.trend}</td>
-                  <td className="px-4 py-3 text-zinc-400">{r.topIssue}</td>
+                  <td className="px-4 py-3 text-[#8A8A8A]">{r.topIssue}</td>
                 </tr>
               ))}
             </tbody>
@@ -100,17 +100,17 @@ function BuilderQuality() {
       </section>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-zinc-200">Builder Score Distribution</h2>
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+        <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Builder Score Distribution</h2>
+        <div className="rounded-xl border border-[#E5E5E5] bg-white p-6 shadow-sm">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={builderDistribution}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#71717a" vertical={false} />
-              <XAxis dataKey="range" stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
-              <YAxis stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" vertical={false} />
+              <XAxis dataKey="range" stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
+              <YAxis stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: '#a1a1aa', fontSize: 12 }} />
-              <Bar dataKey="GT" name="GT Builders" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="MNL" name="MNL Builders" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Legend wrapperStyle={{ color: '#8A8A8A', fontSize: 12 }} />
+              <Bar dataKey="GT" name="GT Builders" fill="#006AFF" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="MNL" name="MNL Builders" fill="#00D632" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -163,13 +163,13 @@ function GraderQuality() {
       </div>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-zinc-200">Grader Performance</h2>
-        <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+        <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Grader Performance</h2>
+        <div className="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-sm">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="bg-zinc-800/50">
+              <tr className="bg-[#F6F6F6]">
                 {['Grader', 'Menus Graded', 'Avg Time', 'Avg Score Given', 'Override Rate', 'Consistency'].map((h) => (
-                  <th key={h} className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">{h}</th>
+                  <th key={h} className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -178,25 +178,25 @@ function GraderQuality() {
                 <tr
                   key={r.grader}
                   className={cn(
-                    'border-t border-zinc-800/50',
-                    r.tone === 'success' && 'bg-emerald-500/5',
-                    r.tone === 'warning' && 'bg-amber-500/5',
-                    r.tone === 'danger' && 'bg-red-500/5',
-                    !r.tone && i % 2 === 1 && 'bg-zinc-900/50',
+                    'border-t border-[#E5E5E5]',
+                    r.tone === 'success' && 'bg-[#00D632]/10',
+                    r.tone === 'warning' && 'bg-[#FF9500]/10',
+                    r.tone === 'danger' && 'bg-[#E02B1D]/10',
+                    !r.tone && i % 2 === 1 && 'bg-[#F6F6F6]/50',
                   )}
                 >
-                  <td className="px-4 py-3 font-medium text-zinc-200">{r.grader}</td>
-                  <td className="px-4 py-3 tabular-nums text-zinc-300">{r.graded}</td>
-                  <td className="px-4 py-3 text-zinc-400">{r.avgTime}</td>
+                  <td className="px-4 py-3 font-medium text-[#1A1A1A]">{r.grader}</td>
+                  <td className="px-4 py-3 tabular-nums text-[#4A4A4A]">{r.graded}</td>
+                  <td className="px-4 py-3 text-[#8A8A8A]">{r.avgTime}</td>
                   <td className={cn('px-4 py-3 font-medium tabular-nums', scoreColor(r.avgScore))}>{r.avgScore}</td>
-                  <td className="px-4 py-3 text-zinc-400">{r.override}</td>
+                  <td className="px-4 py-3 text-[#8A8A8A]">{r.override}</td>
                   <td className="px-4 py-3">
                     <span className={cn(
                       'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
-                      r.tone === 'success' && 'bg-emerald-500/10 text-emerald-400',
-                      r.tone === 'danger' && 'bg-red-500/10 text-red-400',
-                      r.tone === 'warning' && 'bg-amber-500/10 text-amber-400',
-                      !r.tone && 'bg-zinc-700/40 text-zinc-300',
+                      r.tone === 'success' && 'bg-[#00D632]/10 text-[#00D632]',
+                      r.tone === 'danger' && 'bg-[#E02B1D]/10 text-[#E02B1D]',
+                      r.tone === 'warning' && 'bg-[#FF9500]/10 text-[#FF9500]',
+                      !r.tone && 'bg-[#F6F6F6] text-[#4A4A4A]',
                     )}>
                       {r.consistency}
                     </span>
@@ -209,28 +209,28 @@ function GraderQuality() {
       </section>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-200">Score Distribution by Grader</h2>
+        <section className="rounded-xl border border-[#E5E5E5] bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Score Distribution by Grader</h2>
           <ResponsiveContainer width="100%" height={280}>
             <BarChart data={graderScoreDist}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#71717a" vertical={false} />
-              <XAxis dataKey="grader" stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
-              <YAxis stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} domain={[60, 100]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" vertical={false} />
+              <XAxis dataKey="grader" stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
+              <YAxis stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} domain={[60, 100]} />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="score" name="Avg Score" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="score" name="Avg Score" fill="#006AFF" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-200">Grade Time Trend</h2>
+        <section className="rounded-xl border border-[#E5E5E5] bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Grade Time Trend</h2>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={gradeTimeTrend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#71717a" vertical={false} />
-              <XAxis dataKey="week" stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
-              <YAxis stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" vertical={false} />
+              <XAxis dataKey="week" stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
+              <YAxis stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
               <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="time" name="Avg Time (min)" stroke="#10b981" fill="#10b981" fillOpacity={0.1} />
+              <Area type="monotone" dataKey="time" name="Avg Time (min)" stroke="#00D632" fill="#00D632" fillOpacity={0.1} />
             </AreaChart>
           </ResponsiveContainer>
         </section>
@@ -277,12 +277,12 @@ function BuilderProfile() {
     <div className="space-y-8">
       {/* Profile header */}
       <div className="flex items-center gap-6">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-zinc-800 text-lg font-bold text-zinc-300">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#F6F6F6] text-lg font-bold text-[#4A4A4A]">
           CZ
         </div>
         <div className="flex-1">
-          <h2 className="text-xl font-bold text-zinc-100">Carlos Zamora</h2>
-          <p className="text-sm text-zinc-400">czamora-bpo@bpofit.com · GT Team</p>
+          <h2 className="text-xl font-bold text-[#1A1A1A]">Carlos Zamora</h2>
+          <p className="text-sm text-[#8A8A8A]">czamora-bpo@bpofit.com · GT Team</p>
         </div>
         <ScoreRing score={76} size={56} />
       </div>
@@ -294,26 +294,26 @@ function BuilderProfile() {
         <StatCard value="3.2" label="Avg Issues/Menu" tone="info" />
       </div>
 
-      <hr className="border-zinc-800" />
+      <hr className="border-[#E5E5E5]" />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-200">Score Trend</h2>
+        <section className="rounded-xl border border-[#E5E5E5] bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Score Trend</h2>
           <ResponsiveContainer width="100%" height={280}>
             <AreaChart data={profileScoreTrend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#71717a" vertical={false} />
-              <XAxis dataKey="month" stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
-              <YAxis stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} domain={[60, 90]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" vertical={false} />
+              <XAxis dataKey="month" stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
+              <YAxis stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} domain={[60, 90]} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: '#a1a1aa', fontSize: 12 }} />
-              <Area type="monotone" dataKey="Carlos" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} />
-              <Area type="monotone" dataKey="TeamAvg" name="Team Avg" stroke="#10b981" fill="#10b981" fillOpacity={0.1} />
+              <Legend wrapperStyle={{ color: '#8A8A8A', fontSize: 12 }} />
+              <Area type="monotone" dataKey="Carlos" stroke="#006AFF" fill="#006AFF" fillOpacity={0.1} />
+              <Area type="monotone" dataKey="TeamAvg" name="Team Avg" stroke="#00D632" fill="#00D632" fillOpacity={0.1} />
             </AreaChart>
           </ResponsiveContainer>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-200">Issues by Category</h2>
+        <section className="rounded-xl border border-[#E5E5E5] bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Issues by Category</h2>
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
               <Pie
@@ -331,81 +331,81 @@ function BuilderProfile() {
                 ))}
               </Pie>
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: '#a1a1aa', fontSize: 12 }} />
+              <Legend wrapperStyle={{ color: '#8A8A8A', fontSize: 12 }} />
             </PieChart>
           </ResponsiveContainer>
         </section>
       </div>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-zinc-200">Section Strengths & Weaknesses</h2>
-        <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
+        <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Section Strengths & Weaknesses</h2>
+        <div className="rounded-xl border border-[#E5E5E5] bg-white p-6 shadow-sm">
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={profileStrengths}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#71717a" vertical={false} />
-              <XAxis dataKey="section" stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} />
-              <YAxis stroke="#71717a" tick={{ fill: '#a1a1aa', fontSize: 12 }} domain={[50, 100]} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E5E5" vertical={false} />
+              <XAxis dataKey="section" stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} />
+              <YAxis stroke="#E5E5E5" tick={{ fill: '#8A8A8A', fontSize: 12 }} domain={[50, 100]} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: '#a1a1aa', fontSize: 12 }} />
-              <Bar dataKey="Carlos" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="Team" fill="#10b981" radius={[4, 4, 0, 0]} />
+              <Legend wrapperStyle={{ color: '#8A8A8A', fontSize: 12 }} />
+              <Bar dataKey="Carlos" fill="#006AFF" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="Team" fill="#00D632" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
       </section>
 
       {/* Coaching Recommendations */}
-      <section className="rounded-lg border border-zinc-800 bg-zinc-900">
+      <section className="rounded-xl border border-[#E5E5E5] bg-white shadow-sm">
         <button
           onClick={() => setCoachingOpen(!coachingOpen)}
           aria-expanded={coachingOpen}
           className="flex w-full items-center justify-between px-6 py-4 text-left"
         >
           <div className="flex items-center gap-3">
-            <h2 className="text-lg font-semibold text-zinc-200">Coaching Recommendations</h2>
-            <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-medium text-blue-400">
+            <h2 className="text-lg font-semibold text-[#1A1A1A]">Coaching Recommendations</h2>
+            <span className="rounded-full bg-[#006AFF]/10 px-2.5 py-0.5 text-xs font-medium text-[#006AFF]">
               Claude AI
             </span>
           </div>
           <svg
-            className={cn('h-5 w-5 text-zinc-400 transition-transform', coachingOpen && 'rotate-180')}
+            className={cn('h-5 w-5 text-[#8A8A8A] transition-transform', coachingOpen && 'rotate-180')}
             fill="none" viewBox="0 0 24 24" stroke="currentColor"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
         {coachingOpen && (
-          <div className="border-t border-zinc-800 px-6 py-4 text-sm leading-relaxed text-zinc-300 space-y-3">
-            <p><strong className="text-zinc-100">1. Focus on capitalization consistency.</strong> Carlos's most frequent issue is capitalization errors. Recommend reviewing the style guide section on title case vs. sentence case for menu item names and descriptions.</p>
-            <p><strong className="text-zinc-100">2. Double-check auto-add rules.</strong> Several recent menus had items incorrectly added by auto-add rules. Suggest manually verifying auto-added items before submitting, especially for combo/meal deals.</p>
-            <p><strong className="text-zinc-100">3. Organization score improvement.</strong> Carlos's organization scores trail the team average by 9 points. Recommend using the category template feature to ensure consistent section ordering across menus.</p>
+          <div className="border-t border-[#E5E5E5] px-6 py-4 text-sm leading-relaxed text-[#4A4A4A] space-y-3">
+            <p><strong className="text-[#1A1A1A]">1. Focus on capitalization consistency.</strong> Carlos's most frequent issue is capitalization errors. Recommend reviewing the style guide section on title case vs. sentence case for menu item names and descriptions.</p>
+            <p><strong className="text-[#1A1A1A]">2. Double-check auto-add rules.</strong> Several recent menus had items incorrectly added by auto-add rules. Suggest manually verifying auto-added items before submitting, especially for combo/meal deals.</p>
+            <p><strong className="text-[#1A1A1A]">3. Organization score improvement.</strong> Carlos's organization scores trail the team average by 9 points. Recommend using the category template feature to ensure consistent section ordering across menus.</p>
           </div>
         )}
       </section>
 
       {/* Recent Reports */}
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-zinc-200">Recent Reports</h2>
-        <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+        <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Recent Reports</h2>
+        <div className="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-sm">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="bg-zinc-800/50">
+              <tr className="bg-[#F6F6F6]">
                 {['Date', 'Merchant', 'Score', 'Top Issue', 'Feedback'].map((h) => (
-                  <th key={h} className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">{h}</th>
+                  <th key={h} className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {profileReports.map((r, i) => (
-                <tr key={i} className={cn('border-t border-zinc-800/50', i % 2 === 1 && 'bg-zinc-900/50')}>
-                  <td className="px-4 py-3 text-zinc-400">{r.date}</td>
-                  <td className="px-4 py-3 text-zinc-200">{r.merchant}</td>
+                <tr key={i} className={cn('border-t border-[#E5E5E5]', i % 2 === 1 && 'bg-[#F6F6F6]/50')}>
+                  <td className="px-4 py-3 text-[#8A8A8A]">{r.date}</td>
+                  <td className="px-4 py-3 text-[#1A1A1A]">{r.merchant}</td>
                   <td className={cn('px-4 py-3 font-medium tabular-nums', scoreColor(r.score))}>{r.score}</td>
-                  <td className="px-4 py-3 text-zinc-400">{r.topIssue}</td>
+                  <td className="px-4 py-3 text-[#8A8A8A]">{r.topIssue}</td>
                   <td className="px-4 py-3">
                     <span className={cn(
                       'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
-                      r.feedback === 'Sent' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-zinc-700/40 text-zinc-400',
+                      r.feedback === 'Sent' ? 'bg-[#00D632]/10 text-[#00D632]' : 'bg-[#F6F6F6] text-[#8A8A8A]',
                     )}>
                       {r.feedback}
                     </span>
@@ -423,16 +423,16 @@ function BuilderProfile() {
 /* ─── Utility helpers ─────────────────────────────────────────────── */
 
 function scoreColor(score: number) {
-  if (score >= 90) return 'text-emerald-400';
-  if (score >= 75) return 'text-amber-400';
-  if (score >= 60) return 'text-orange-400';
-  return 'text-red-400';
+  if (score >= 90) return 'text-[#00D632]';
+  if (score >= 75) return 'text-[#FF9500]';
+  if (score >= 60) return 'text-[#FF9500]';
+  return 'text-[#E02B1D]';
 }
 
 function trendColor(trend: string) {
-  if (trend.includes('Improving')) return 'text-emerald-400';
-  if (trend.includes('Declining')) return 'text-red-400';
-  return 'text-zinc-400';
+  if (trend.includes('Improving')) return 'text-[#00D632]';
+  if (trend.includes('Declining')) return 'text-[#E02B1D]';
+  return 'text-[#8A8A8A]';
 }
 
 /* ─── Main Quality Page ───────────────────────────────────────────── */
@@ -442,7 +442,7 @@ export default function Quality() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-zinc-100">Quality Tracking</h1>
+      <h1 className="text-2xl font-bold text-[#1A1A1A]">Quality Tracking</h1>
 
       {/* Sub-tab pills */}
       <div className="flex gap-2">
@@ -453,8 +453,8 @@ export default function Quality() {
             className={cn(
               'rounded-full px-4 py-1.5 text-sm transition-colors',
               tab === t.key
-                ? 'bg-zinc-100 font-medium text-zinc-900'
-                : 'text-zinc-400 hover:text-zinc-200',
+                ? 'bg-[#1A1A1A] font-medium text-white'
+                : 'text-[#8A8A8A] hover:text-[#1A1A1A]',
             )}
           >
             {t.label}

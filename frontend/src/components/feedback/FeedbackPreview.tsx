@@ -47,15 +47,15 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
   if (sent) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 p-6">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20">
-          <Send className="h-8 w-8 text-green-400" />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#00D632]/10">
+          <Send className="h-8 w-8 text-[#00D632]" />
         </div>
-        <h2 className="text-xl font-bold text-zinc-100">Feedback Sent</h2>
-        <p className="text-sm text-zinc-400">Email delivered to {r.builder_email}</p>
-        <p className="text-sm text-zinc-500">CC: {CC_EMAIL}</p>
+        <h2 className="text-xl font-bold text-[#1A1A1A]">Feedback Sent</h2>
+        <p className="text-sm text-[#4A4A4A]">Email delivered to {r.builder_email}</p>
+        <p className="text-sm text-[#8A8A8A]">CC: {CC_EMAIL}</p>
         <button
           onClick={onClose}
-          className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+          className="mt-4 rounded-full bg-[#006AFF] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#0056CC] transition-colors"
         >
           Back to Report
         </button>
@@ -69,12 +69,12 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
       <div className="flex items-center justify-between">
         <button
           onClick={onClose}
-          className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200"
+          className="flex items-center gap-2 text-sm text-[#8A8A8A] hover:text-[#1A1A1A] transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Back
         </button>
-        <h1 className="text-lg font-semibold text-zinc-100">Preview Feedback Email</h1>
+        <h1 className="text-lg font-semibold text-[#1A1A1A]">Preview Feedback Email</h1>
         <button
           disabled={sending}
           onClick={async () => {
@@ -97,7 +97,7 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
               setSending(false);
             }
           }}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
+          className="flex items-center gap-2 rounded-full bg-[#006AFF] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0056CC] disabled:opacity-50 transition-colors"
         >
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           {sending ? 'Sending...' : 'Send Feedback'}
@@ -105,23 +105,23 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
       </div>
 
       {/* Email details card */}
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
+      <div className="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-sm">
         <div className="space-y-2 text-sm">
           <div className="flex gap-2">
-            <span className="w-16 shrink-0 text-zinc-500">To:</span>
-            <span className="text-zinc-200">{r.builder_name} ({r.builder_email})</span>
+            <span className="w-16 shrink-0 text-[#8A8A8A]">To:</span>
+            <span className="text-[#1A1A1A]">{r.builder_name} ({r.builder_email})</span>
           </div>
           <div className="flex gap-2">
-            <span className="w-16 shrink-0 text-zinc-500">CC:</span>
-            <span className="text-zinc-200">{CC_EMAIL}</span>
+            <span className="w-16 shrink-0 text-[#8A8A8A]">CC:</span>
+            <span className="text-[#1A1A1A]">{CC_EMAIL}</span>
           </div>
           <div className="flex gap-2">
-            <span className="w-16 shrink-0 text-zinc-500">Reply-To:</span>
-            <span className="text-zinc-200">{r.graded_by}</span>
+            <span className="w-16 shrink-0 text-[#8A8A8A]">Reply-To:</span>
+            <span className="text-[#1A1A1A]">{r.graded_by}</span>
           </div>
           <div className="flex gap-2">
-            <span className="w-16 shrink-0 text-zinc-500">Subject:</span>
-            <span className="font-medium text-zinc-200">
+            <span className="w-16 shrink-0 text-[#8A8A8A]">Subject:</span>
+            <span className="font-medium text-[#1A1A1A]">
               Menu QA Report — {r.merchant_name} — Score: {r.overall_score}/100
             </span>
           </div>
@@ -129,39 +129,39 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
       </div>
 
       {/* Email body card */}
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
+      <div className="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-sm">
         <div className="space-y-5">
-          <div className="space-y-2 text-sm text-zinc-300">
+          <div className="space-y-2 text-sm text-[#4A4A4A]">
             <p>Hi {r.builder_name},</p>
-            <p>Your menu build for <strong className="text-zinc-100">{r.merchant_name}</strong> has been reviewed.</p>
+            <p>Your menu build for <strong className="text-[#1A1A1A]">{r.merchant_name}</strong> has been reviewed.</p>
           </div>
 
           {/* Score summary */}
           <div className="flex items-center gap-4">
             <ScoreRing score={r.overall_score} size={64} />
             <div>
-              <p className="text-lg font-bold text-zinc-100">
+              <p className="text-lg font-bold text-[#1A1A1A]">
                 Overall Score: {r.overall_score}/100 ({letterGrade(r.overall_score)})
               </p>
             </div>
           </div>
 
           {/* Section scores table */}
-          <div className="overflow-hidden rounded-lg border border-zinc-800">
+          <div className="overflow-hidden rounded-lg border border-[#E5E5E5]">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="bg-zinc-800/50">
-                  <th className="px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Section</th>
-                  <th className="px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Score</th>
-                  <th className="px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Max</th>
+                <tr className="bg-[#F6F6F6]">
+                  <th className="px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Section</th>
+                  <th className="px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Score</th>
+                  <th className="px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Max</th>
                 </tr>
               </thead>
               <tbody>
                 {sections.map((s) => (
                   <tr key={s.name}>
-                    <td className="border-t border-zinc-800/50 px-4 py-2 text-zinc-300">{s.name}</td>
-                    <td className="border-t border-zinc-800/50 px-4 py-2 tabular-nums text-zinc-200">{s.earned}</td>
-                    <td className="border-t border-zinc-800/50 px-4 py-2 tabular-nums text-zinc-400">{s.max}</td>
+                    <td className="border-t border-[#E5E5E5] px-4 py-2.5 text-[#4A4A4A]">{s.name}</td>
+                    <td className="border-t border-[#E5E5E5] px-4 py-2.5 tabular-nums text-[#1A1A1A]">{s.earned}</td>
+                    <td className="border-t border-[#E5E5E5] px-4 py-2.5 tabular-nums text-[#8A8A8A]">{s.max}</td>
                   </tr>
                 ))}
               </tbody>
@@ -171,21 +171,21 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
           {/* Top issues table */}
           {topIssues.length > 0 && (
             <div>
-              <h3 className="mb-2 text-sm font-semibold text-zinc-200">Top Issues</h3>
-              <div className="overflow-hidden rounded-lg border border-zinc-800">
+              <h3 className="mb-2 text-sm font-semibold text-[#1A1A1A]">Top Issues</h3>
+              <div className="overflow-hidden rounded-lg border border-[#E5E5E5]">
                 <table className="w-full text-left text-sm">
                   <thead>
-                    <tr className="bg-zinc-800/50">
-                      <th className="px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Item</th>
-                      <th className="px-4 py-2 text-xs font-medium uppercase tracking-wider text-zinc-400">Issue</th>
+                    <tr className="bg-[#F6F6F6]">
+                      <th className="px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Item</th>
+                      <th className="px-4 py-2.5 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Issue</th>
                     </tr>
                   </thead>
                   <tbody>
                     {topIssues.map((ti, idx) => (
                       <tr key={idx} className={issueRowColor(ti.issue)}>
-                        <td className="border-t border-zinc-800/50 px-4 py-2 text-zinc-300">{ti.item}</td>
-                        <td className="border-t border-zinc-800/50 px-4 py-2">
-                          <span className={`rounded px-1.5 py-0.5 text-xs ${issueBadgeColor(ti.issue)}`}>
+                        <td className="border-t border-[#E5E5E5] px-4 py-2.5 text-[#4A4A4A]">{ti.item}</td>
+                        <td className="border-t border-[#E5E5E5] px-4 py-2.5">
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${issueBadgeColor(ti.issue)}`}>
                             {ti.issue}
                           </span>
                         </td>
@@ -199,8 +199,8 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
 
           {/* Recommendations */}
           <div>
-            <h3 className="mb-2 text-sm font-semibold text-zinc-200">Recommendations</h3>
-            <ol className="list-inside list-decimal space-y-1 text-sm text-zinc-400">
+            <h3 className="mb-2 text-sm font-semibold text-[#1A1A1A]">Recommendations</h3>
+            <ol className="list-inside list-decimal space-y-1 text-sm text-[#4A4A4A]">
               {recommendations.map((rec, idx) => (
                 <li key={idx}>{rec}</li>
               ))}
@@ -210,22 +210,22 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
       </div>
 
       {/* Personal notes */}
-      <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-        <label className="mb-2 block text-sm font-semibold text-zinc-200">Personal Notes</label>
+      <div className="rounded-xl border border-[#E5E5E5] bg-white p-5 shadow-sm">
+        <label className="mb-2 block text-sm font-semibold text-[#1A1A1A]">Personal Notes</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
           placeholder="Add any context or coaching notes for the builder..."
-          className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
+          className="w-full rounded-lg border border-[#E5E5E5] bg-white px-3 py-2 text-sm text-[#1A1A1A] placeholder-[#8A8A8A] focus:border-[#006AFF] focus:ring-2 focus:ring-[#006AFF]/10 focus:outline-none transition-colors"
         />
-        <p className="mt-1.5 text-xs text-zinc-500">
+        <p className="mt-1.5 text-xs text-[#8A8A8A]">
           These notes will be appended to the email above.
         </p>
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400">
+        <div className="rounded-lg border border-[#E02B1D]/20 bg-[#E02B1D]/5 px-4 py-3 text-sm text-[#E02B1D]">
           {error}
         </div>
       )}
@@ -235,18 +235,18 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
 
 function issueRowColor(issue: string) {
   const lower = issue.toLowerCase();
-  if (lower.includes('price') || lower.includes('missing')) return 'bg-red-500/5';
-  if (lower.includes('capital') || lower.includes('title case')) return 'bg-amber-500/5';
-  if (lower.includes('modifier') || lower.includes('variation')) return 'bg-amber-500/5';
-  if (lower.includes('duplicate')) return 'bg-blue-500/5';
+  if (lower.includes('price') || lower.includes('missing')) return 'bg-[#E02B1D]/5';
+  if (lower.includes('capital') || lower.includes('title case')) return 'bg-[#FF9500]/5';
+  if (lower.includes('modifier') || lower.includes('variation')) return 'bg-[#FF9500]/5';
+  if (lower.includes('duplicate')) return 'bg-[#006AFF]/5';
   return '';
 }
 
 function issueBadgeColor(issue: string) {
   const lower = issue.toLowerCase();
-  if (lower.includes('price') || lower.includes('missing')) return 'bg-red-500/20 text-red-400';
-  if (lower.includes('capital') || lower.includes('title case')) return 'bg-amber-500/20 text-amber-400';
-  if (lower.includes('modifier') || lower.includes('variation')) return 'bg-amber-500/20 text-amber-400';
-  if (lower.includes('duplicate')) return 'bg-blue-500/20 text-blue-400';
-  return 'bg-zinc-700 text-zinc-400';
+  if (lower.includes('price') || lower.includes('missing')) return 'bg-[#E02B1D]/10 text-[#E02B1D]';
+  if (lower.includes('capital') || lower.includes('title case')) return 'bg-[#FF9500]/10 text-[#FF9500]';
+  if (lower.includes('modifier') || lower.includes('variation')) return 'bg-[#FF9500]/10 text-[#FF9500]';
+  if (lower.includes('duplicate')) return 'bg-[#006AFF]/10 text-[#006AFF]';
+  return 'bg-[#F6F6F6] text-[#4A4A4A]';
 }

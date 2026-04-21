@@ -26,24 +26,24 @@ function scoreLabel(score: number) {
 }
 
 function scoreLabelColor(score: number) {
-  if (score >= 90) return 'bg-green-500/20 text-green-400';
-  if (score >= 80) return 'bg-blue-500/20 text-blue-400';
-  if (score >= 70) return 'bg-amber-500/20 text-amber-400';
-  return 'bg-red-500/20 text-red-400';
+  if (score >= 90) return 'bg-[#00D632]/10 text-[#00D632]';
+  if (score >= 80) return 'bg-[#006AFF]/10 text-[#006AFF]';
+  if (score >= 70) return 'bg-[#FF9500]/10 text-[#FF9500]';
+  return 'bg-[#E02B1D]/10 text-[#E02B1D]';
 }
 
 function rowTone(score: number) {
-  if (score >= 90) return 'bg-emerald-500/5';
+  if (score >= 90) return 'bg-[#00D632]/10';
   if (score >= 75) return '';
-  if (score >= 60) return 'bg-amber-500/5';
-  return 'bg-red-500/5';
+  if (score >= 60) return 'bg-[#FF9500]/10';
+  return 'bg-[#E02B1D]/10';
 }
 
 function scoreBadge(score: number) {
-  if (score >= 90) return 'text-green-400';
-  if (score >= 75) return 'text-zinc-300';
-  if (score >= 60) return 'text-amber-400';
-  return 'text-red-400';
+  if (score >= 90) return 'text-[#00D632]';
+  if (score >= 75) return 'text-[#4A4A4A]';
+  if (score >= 60) return 'text-[#FF9500]';
+  return 'text-[#E02B1D]';
 }
 
 function formatDate(iso: string) {
@@ -63,12 +63,12 @@ function getIssueCount(val: IssueValue): number {
 }
 
 const ISSUE_CONFIG = [
-  { key: 'price_discrepancies', label: 'Price Mismatches', tone: 'danger' as const, icon: DollarSign, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' },
-  { key: 'capitalization_errors', label: 'Capitalization Errors', tone: 'warning' as const, icon: Type, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
-  { key: 'modifier_issues', label: 'Modifier Issues', tone: 'warning' as const, icon: Layers, color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/20' },
-  { key: 'duplicates', label: 'Duplicates', tone: 'info' as const, icon: Copy, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/20' },
-  { key: 'missing_items', label: 'Missing Items', tone: 'danger' as const, icon: PackageMinus, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20' },
-  { key: 'extra_items', label: 'Extra Items', tone: 'success' as const, icon: PackagePlus, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/20' },
+  { key: 'price_discrepancies', label: 'Price Mismatches', tone: 'danger' as const, icon: DollarSign, color: 'text-[#E02B1D]', bg: 'bg-[#E02B1D]/10', border: 'border-[#E02B1D]/20' },
+  { key: 'capitalization_errors', label: 'Capitalization Errors', tone: 'warning' as const, icon: Type, color: 'text-[#FF9500]', bg: 'bg-[#FF9500]/10', border: 'border-[#FF9500]/20' },
+  { key: 'modifier_issues', label: 'Modifier Issues', tone: 'warning' as const, icon: Layers, color: 'text-[#FF9500]', bg: 'bg-[#FF9500]/10', border: 'border-[#FF9500]/20' },
+  { key: 'duplicates', label: 'Duplicates', tone: 'info' as const, icon: Copy, color: 'text-[#006AFF]', bg: 'bg-[#006AFF]/10', border: 'border-[#006AFF]/20' },
+  { key: 'missing_items', label: 'Missing Items', tone: 'danger' as const, icon: PackageMinus, color: 'text-[#E02B1D]', bg: 'bg-[#E02B1D]/10', border: 'border-[#E02B1D]/20' },
+  { key: 'extra_items', label: 'Extra Items', tone: 'success' as const, icon: PackagePlus, color: 'text-[#00D632]', bg: 'bg-[#00D632]/10', border: 'border-[#00D632]/20' },
 ] as const;
 
 const SECTION_CONFIG = [
@@ -79,10 +79,10 @@ const SECTION_CONFIG = [
 ] as const;
 
 const toneStyles = {
-  success: 'border-l-green-500',
-  warning: 'border-l-amber-500',
-  danger: 'border-l-red-500',
-  info: 'border-l-blue-500',
+  success: 'border-l-[#00D632]',
+  warning: 'border-l-[#FF9500]',
+  danger: 'border-l-[#E02B1D]',
+  info: 'border-l-[#006AFF]',
 };
 
 export default function Report() {
@@ -113,7 +113,7 @@ export default function Report() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#E5E5E5] border-t-[#006AFF]" />
       </div>
     );
   }
@@ -121,11 +121,11 @@ export default function Report() {
   if (error || !report) {
     return (
       <div className="mx-auto max-w-6xl p-6">
-        <Link to="/reports" className="mb-4 inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-zinc-200">
+        <Link to="/reports" className="mb-4 inline-flex items-center gap-1 text-sm text-[#8A8A8A] hover:text-[#1A1A1A]">
           <ArrowLeft className="h-4 w-4" /> Back to Reports
         </Link>
-        <div className="flex flex-col items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 py-20 text-center">
-          <p className="text-sm text-red-400">{error || 'Report not found'}</p>
+        <div className="flex flex-col items-center justify-center rounded-xl border border-[#E5E5E5] bg-white py-20 text-center shadow-sm">
+          <p className="text-sm text-[#E02B1D]">{error || 'Report not found'}</p>
         </div>
       </div>
     );
@@ -171,18 +171,18 @@ export default function Report() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
       {/* Back link */}
-      <Link to="/reports" className="inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-zinc-200">
+      <Link to="/reports" className="inline-flex items-center gap-1 text-sm text-[#8A8A8A] hover:text-[#1A1A1A]">
         <ArrowLeft className="h-4 w-4" /> Back to Reports
       </Link>
 
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-100">QA Report: {r.merchant_name}</h1>
-          <p className="mt-1 text-sm text-zinc-400">
+          <h1 className="text-2xl font-bold text-[#1A1A1A]">QA Report: {r.merchant_name}</h1>
+          <p className="mt-1 text-sm text-[#8A8A8A]">
             Graded by {r.graded_by} on {formatDate(r.created_at)} | Market: {r.market}
           </p>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-[#8A8A8A]">
             Built by {r.builder_name} ({r.builder_email}) | Team: {r.builder_team}
           </p>
         </div>
@@ -195,14 +195,14 @@ export default function Report() {
                 alert('Failed to generate PDF. Please try again.');
               }
             }}
-            className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700"
+            className="flex items-center gap-2 rounded-lg border border-[#E5E5E5] bg-[#F6F6F6] px-4 py-2 text-sm font-medium text-[#4A4A4A] hover:bg-[#F6F6F6]"
           >
             <FileDown className="h-4 w-4" />
             Export PDF
           </button>
           <button
             onClick={() => setShowFeedback(true)}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+            className="rounded-full bg-[#006AFF] px-4 py-2 text-sm font-medium text-white hover:bg-[#0056CC]"
           >
             Send Feedback
           </button>
@@ -226,37 +226,37 @@ export default function Report() {
               <button
                 key={key}
                 onClick={() => scrollToSection(key)}
-                className="group flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-zinc-800/50"
+                className="group flex w-full items-center gap-3 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-[#F6F6F6]"
               >
-                <span className="w-28 shrink-0 text-sm text-zinc-300 group-hover:text-zinc-100">
+                <span className="w-28 shrink-0 text-sm text-[#4A4A4A] group-hover:text-[#1A1A1A]">
                   {label}
-                  <span className="ml-1 text-[10px] text-zinc-500">({weight})</span>
+                  <span className="ml-1 text-[10px] text-[#8A8A8A]">({weight})</span>
                 </span>
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-800">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-[#F6F6F6]">
                   <div
                     className={`h-full rounded-full transition-all duration-700 ${
-                      pct >= 90 ? 'bg-green-500' : pct >= 75 ? 'bg-amber-500' : pct >= 60 ? 'bg-orange-500' : 'bg-red-500'
+                      pct >= 90 ? 'bg-[#00D632]' : pct >= 75 ? 'bg-[#FF9500]' : pct >= 60 ? 'bg-[#FF9500]' : 'bg-[#E02B1D]'
                     }`}
                     style={{ width: `${Math.min(100, pct)}%` }}
                   />
                 </div>
-                <span className="w-14 shrink-0 text-right text-sm tabular-nums text-zinc-400">
+                <span className="w-14 shrink-0 text-right text-sm tabular-nums text-[#8A8A8A]">
                   {sec.earned}/{sec.max_points}
                 </span>
-                <ChevronRight className="h-3.5 w-3.5 text-zinc-600 transition-colors group-hover:text-zinc-400" />
+                <ChevronRight className="h-3.5 w-3.5 text-[#E5E5E5] transition-colors group-hover:text-[#8A8A8A]" />
               </button>
             );
           })}
         </div>
       </div>
 
-      <hr className="border-zinc-800" />
+      <hr className="border-[#E5E5E5]" />
 
       {/* Issue Stats — clickable cards */}
       <div>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-zinc-400">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-[#8A8A8A]">
           Issues Found
-          <span className="ml-2 text-xs font-normal text-zinc-500">(click to view details)</span>
+          <span className="ml-2 text-xs font-normal text-[#8A8A8A]">(click to view details)</span>
         </h2>
         <div className="grid gap-4 sm:grid-cols-3">
           {ISSUE_CONFIG.map(({ key, label, tone, icon: Icon }) => {
@@ -266,17 +266,17 @@ export default function Report() {
                 key={key}
                 onClick={() => count > 0 && scrollToIssue(key)}
                 disabled={count === 0}
-                className={`rounded-lg border border-zinc-800 bg-zinc-900 p-5 text-left transition-all border-l-2 ${
+                className={`rounded-xl border border-[#E5E5E5] bg-white p-5 text-left shadow-sm transition-all border-l-2 ${
                   toneStyles[tone]
-                } ${count > 0 ? 'cursor-pointer hover:border-zinc-700 hover:bg-zinc-800/80' : 'opacity-60'}`}
+                } ${count > 0 ? 'cursor-pointer hover:border-[#E5E5E5] hover:bg-[#F6F6F6]' : 'opacity-60'}`}
               >
                 <div className="flex items-center justify-between">
-                  <p className="text-2xl font-bold text-zinc-100">{count}</p>
-                  {count > 0 && <Icon className="h-4 w-4 text-zinc-500" />}
+                  <p className="text-2xl font-bold text-[#1A1A1A]">{count}</p>
+                  {count > 0 && <Icon className="h-4 w-4 text-[#8A8A8A]" />}
                 </div>
-                <p className="mt-1 text-sm text-zinc-400">{label}</p>
+                <p className="mt-1 text-sm text-[#8A8A8A]">{label}</p>
                 {count > 0 && (
-                  <p className="mt-1 text-xs text-zinc-600">Click to see all {count} items</p>
+                  <p className="mt-1 text-xs text-[#E5E5E5]">Click to see all {count} items</p>
                 )}
               </button>
             );
@@ -293,7 +293,7 @@ export default function Report() {
           <div
             key={key}
             ref={(el) => { issueRefs.current[key] = el; }}
-            className={`overflow-hidden rounded-lg border ${border} ${bg} transition-all`}
+            className={`overflow-hidden rounded-xl border shadow-sm ${border} ${bg} transition-all`}
           >
             <button
               onClick={() => toggleIssue(key)}
@@ -301,33 +301,33 @@ export default function Report() {
             >
               <div className="flex items-center gap-3">
                 <Icon className={`h-5 w-5 ${color}`} />
-                <span className="font-semibold text-zinc-100">{label}</span>
+                <span className="font-semibold text-[#1A1A1A]">{label}</span>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${color} ${bg}`}>
                   {items.length}
                 </span>
               </div>
               {isExpanded ? (
-                <ChevronDown className="h-4 w-4 text-zinc-500" />
+                <ChevronDown className="h-4 w-4 text-[#8A8A8A]" />
               ) : (
-                <ChevronRight className="h-4 w-4 text-zinc-500" />
+                <ChevronRight className="h-4 w-4 text-[#8A8A8A]" />
               )}
             </button>
             {isExpanded && (
-              <div className="border-t border-zinc-800/50 px-5 pb-4">
+              <div className="border-t border-[#E5E5E5] px-5 pb-4">
                 <table className="mt-3 w-full text-left">
                   <thead>
                     <tr>
-                      <th className="pb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Item</th>
-                      <th className="pb-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Detail</th>
+                      <th className="pb-2 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Item</th>
+                      <th className="pb-2 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Detail</th>
                     </tr>
                   </thead>
                   <tbody>
                     {items.map((entry, i) => (
-                      <tr key={i} className={i % 2 === 1 ? 'bg-zinc-900/30' : ''}>
-                        <td className="border-t border-zinc-800/30 py-2 pr-4 text-sm font-medium text-zinc-200">
+                      <tr key={i} className={i % 2 === 1 ? 'bg-[#F6F6F6]/50' : ''}>
+                        <td className="border-t border-[#E5E5E5] py-2 pr-4 text-sm font-medium text-[#1A1A1A]">
                           {typeof entry === 'object' ? entry.item || '—' : String(entry)}
                         </td>
-                        <td className="border-t border-zinc-800/30 py-2 text-sm text-zinc-400">
+                        <td className="border-t border-[#E5E5E5] py-2 text-sm text-[#8A8A8A]">
                           {typeof entry === 'object' ? entry.detail || '—' : '—'}
                         </td>
                       </tr>
@@ -340,11 +340,11 @@ export default function Report() {
         );
       })}
 
-      <hr className="border-zinc-800" />
+      <hr className="border-[#E5E5E5]" />
 
       {/* Section Breakdowns */}
       <div>
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-400">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#8A8A8A]">
           Section Breakdowns
         </h2>
         <div className="space-y-4">
@@ -358,93 +358,93 @@ export default function Report() {
               <div
                 key={key}
                 ref={(el) => { sectionRefs.current[key] = el; }}
-                className={`overflow-hidden rounded-lg border transition-all ${
-                  isActive ? 'border-zinc-600 bg-zinc-900' : 'border-zinc-800 bg-zinc-900'
+                className={`overflow-hidden rounded-xl border shadow-sm transition-all ${
+                  isActive ? 'border-[#006AFF]/30 bg-white' : 'border-[#E5E5E5] bg-white'
                 }`}
               >
                 <button
                   onClick={() => setActiveSection(isActive ? null : key)}
-                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-zinc-800/50"
+                  className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-[#F6F6F6]"
                 >
                   <div className="flex items-center gap-4">
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold ${
                         pct >= 90
-                          ? 'bg-green-500/20 text-green-400'
+                          ? 'bg-[#00D632]/10 text-[#00D632]'
                           : pct >= 75
-                          ? 'bg-amber-500/20 text-amber-400'
+                          ? 'bg-[#FF9500]/10 text-[#FF9500]'
                           : pct >= 60
-                          ? 'bg-orange-500/20 text-orange-400'
-                          : 'bg-red-500/20 text-red-400'
+                          ? 'bg-[#FF9500]/10 text-[#FF9500]'
+                          : 'bg-[#E02B1D]/10 text-[#E02B1D]'
                       }`}
                     >
                       {pct}%
                     </div>
                     <div>
-                      <span className="font-semibold text-zinc-100">
+                      <span className="font-semibold text-[#1A1A1A]">
                         {label}
-                        <span className="ml-2 text-xs font-normal text-zinc-500">({weight} of total)</span>
+                        <span className="ml-2 text-xs font-normal text-[#8A8A8A]">({weight} of total)</span>
                       </span>
-                      <p className="mt-0.5 text-xs text-zinc-500">{description}</p>
+                      <p className="mt-0.5 text-xs text-[#8A8A8A]">{description}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm tabular-nums text-zinc-400">{sec.earned}/{sec.max_points} pts</span>
+                    <span className="text-sm tabular-nums text-[#8A8A8A]">{sec.earned}/{sec.max_points} pts</span>
                     {flaggedItems.length > 0 && (
-                      <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-xs text-amber-400">
+                      <span className="flex items-center gap-1 rounded-full bg-[#FF9500]/10 px-2 py-0.5 text-xs text-[#FF9500]">
                         <AlertTriangle className="h-3 w-3" />
                         {flaggedItems.length} items flagged
                       </span>
                     )}
                     {isActive ? (
-                      <ChevronDown className="h-4 w-4 text-zinc-500" />
+                      <ChevronDown className="h-4 w-4 text-[#8A8A8A]" />
                     ) : (
-                      <ChevronRight className="h-4 w-4 text-zinc-500" />
+                      <ChevronRight className="h-4 w-4 text-[#8A8A8A]" />
                     )}
                   </div>
                 </button>
                 {isActive && (
-                  <div className="border-t border-zinc-800 px-5 pb-5">
+                  <div className="border-t border-[#E5E5E5] px-5 pb-5">
                     {flaggedItems.length > 0 ? (
                       <div className="mt-3 overflow-x-auto">
                         <table className="w-full text-left">
                           <thead>
-                            <tr className="bg-zinc-800/30">
-                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Item</th>
-                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Category</th>
-                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-zinc-500">{label} Score</th>
-                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Overall</th>
-                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-zinc-500">Issues</th>
+                            <tr className="bg-[#F6F6F6]">
+                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Item</th>
+                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Category</th>
+                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">{label} Score</th>
+                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Overall</th>
+                              <th className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Issues</th>
                             </tr>
                           </thead>
                           <tbody>
                             {flaggedItems.map((item, idx) => {
                               const dimScore = item[key as keyof ItemGrade] as number;
                               return (
-                                <tr key={item.item_name} className={idx % 2 === 1 ? 'bg-zinc-900/50' : ''}>
-                                  <td className="border-t border-zinc-800/30 px-3 py-2.5 text-sm font-medium text-zinc-200">
+                                <tr key={item.item_name} className={idx % 2 === 1 ? 'bg-[#F6F6F6]/50' : ''}>
+                                  <td className="border-t border-[#E5E5E5] px-3 py-2.5 text-sm font-medium text-[#1A1A1A]">
                                     {item.item_name}
                                   </td>
-                                  <td className="border-t border-zinc-800/30 px-3 py-2.5 text-sm text-zinc-400">
+                                  <td className="border-t border-[#E5E5E5] px-3 py-2.5 text-sm text-[#8A8A8A]">
                                     {item.category_name}
                                   </td>
-                                  <td className={`border-t border-zinc-800/30 px-3 py-2.5 text-sm font-semibold tabular-nums ${scoreBadge(dimScore)}`}>
+                                  <td className={`border-t border-[#E5E5E5] px-3 py-2.5 text-sm font-semibold tabular-nums ${scoreBadge(dimScore)}`}>
                                     {dimScore}%
                                   </td>
-                                  <td className={`border-t border-zinc-800/30 px-3 py-2.5 text-sm tabular-nums ${scoreBadge(item.overall_score)}`}>
+                                  <td className={`border-t border-[#E5E5E5] px-3 py-2.5 text-sm tabular-nums ${scoreBadge(item.overall_score)}`}>
                                     {item.overall_score}%
                                   </td>
-                                  <td className="border-t border-zinc-800/30 px-3 py-2.5 text-sm text-zinc-400">
+                                  <td className="border-t border-[#E5E5E5] px-3 py-2.5 text-sm text-[#8A8A8A]">
                                     {item.issues.length > 0 ? (
                                       <div className="flex flex-wrap gap-1">
                                         {item.issues.map((issue, i) => (
-                                          <span key={i} className="rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400">
+                                          <span key={i} className="rounded bg-[#F6F6F6] px-1.5 py-0.5 text-xs text-[#8A8A8A]">
                                             {issue}
                                           </span>
                                         ))}
                                       </div>
                                     ) : (
-                                      <span className="text-zinc-600">—</span>
+                                      <span className="text-[#E5E5E5]">—</span>
                                     )}
                                   </td>
                                 </tr>
@@ -454,8 +454,8 @@ export default function Report() {
                         </table>
                       </div>
                     ) : (
-                      <div className="mt-3 rounded-lg bg-green-500/5 p-4 text-center">
-                        <p className="text-sm text-green-400">All items scored 90%+ for {label.toLowerCase()}.</p>
+                      <div className="mt-3 rounded-xl bg-[#00D632]/10 p-4 text-center">
+                        <p className="text-sm text-[#00D632]">All items scored 90%+ for {label.toLowerCase()}.</p>
                       </div>
                     )}
                   </div>
@@ -466,62 +466,62 @@ export default function Report() {
         </div>
       </div>
 
-      <hr className="border-zinc-800" />
+      <hr className="border-[#E5E5E5]" />
 
       {/* Full Per-Item Grades Table */}
       <div>
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-zinc-400">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#8A8A8A]">
           All Item Grades ({r.item_grades.length} items)
         </h2>
         {r.item_grades.length > 0 ? (
-          <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+          <div className="overflow-hidden rounded-xl border border-[#E5E5E5] bg-white shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-zinc-800/50">
-                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Item</th>
-                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Category</th>
-                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Score</th>
-                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Neatness">N</th>
-                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Organization">O</th>
-                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Accuracy">A</th>
-                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Thoroughness">T</th>
-                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Issues</th>
+                  <tr className="bg-[#F6F6F6]">
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Item</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Category</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Score</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]" title="Neatness">N</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]" title="Organization">O</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]" title="Accuracy">A</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]" title="Thoroughness">T</th>
+                    <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#8A8A8A]">Issues</th>
                   </tr>
                 </thead>
                 <tbody>
                   {r.item_grades.map((item: ItemGrade, idx: number) => (
                     <tr
                       key={item.item_name}
-                      className={`${rowTone(item.overall_score)} ${idx % 2 === 1 ? 'bg-zinc-900/50' : ''}`}
+                      className={`${rowTone(item.overall_score)} ${idx % 2 === 1 ? 'bg-[#F6F6F6]/50' : ''}`}
                     >
-                      <td className="border-t border-zinc-800/50 px-4 py-3 text-sm font-medium text-zinc-200">
+                      <td className="border-t border-[#E5E5E5] px-4 py-3 text-sm font-medium text-[#1A1A1A]">
                         {item.item_name}
                       </td>
-                      <td className="border-t border-zinc-800/50 px-4 py-3 text-sm text-zinc-400">
+                      <td className="border-t border-[#E5E5E5] px-4 py-3 text-sm text-[#8A8A8A]">
                         {item.category_name}
                       </td>
-                      <td className={`border-t border-zinc-800/50 px-4 py-3 text-sm font-semibold tabular-nums ${scoreBadge(item.overall_score)}`}>
+                      <td className={`border-t border-[#E5E5E5] px-4 py-3 text-sm font-semibold tabular-nums ${scoreBadge(item.overall_score)}`}>
                         {item.overall_score}%
                       </td>
-                      <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.neatness}</td>
-                      <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.organization}</td>
-                      <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.accuracy}</td>
-                      <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.thoroughness}</td>
-                      <td className="border-t border-zinc-800/50 px-4 py-3 text-sm text-zinc-400">
+                      <td className="border-t border-[#E5E5E5] px-4 py-3 text-sm tabular-nums text-[#8A8A8A]">{item.neatness}</td>
+                      <td className="border-t border-[#E5E5E5] px-4 py-3 text-sm tabular-nums text-[#8A8A8A]">{item.organization}</td>
+                      <td className="border-t border-[#E5E5E5] px-4 py-3 text-sm tabular-nums text-[#8A8A8A]">{item.accuracy}</td>
+                      <td className="border-t border-[#E5E5E5] px-4 py-3 text-sm tabular-nums text-[#8A8A8A]">{item.thoroughness}</td>
+                      <td className="border-t border-[#E5E5E5] px-4 py-3 text-sm text-[#8A8A8A]">
                         {item.issues.length > 0 ? (
                           <div className="flex flex-wrap gap-1">
                             {item.issues.map((issue, i) => (
                               <span
                                 key={i}
-                                className="rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400"
+                                className="rounded bg-[#F6F6F6] px-1.5 py-0.5 text-xs text-[#8A8A8A]"
                               >
                                 {issue}
                               </span>
                             ))}
                           </div>
                         ) : (
-                          <span className="text-zinc-600">—</span>
+                          <span className="text-[#E5E5E5]">—</span>
                         )}
                       </td>
                     </tr>
@@ -531,8 +531,8 @@ export default function Report() {
             </div>
           </div>
         ) : (
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900 py-12 text-center">
-            <p className="text-sm text-zinc-500">No per-item grades recorded for this report.</p>
+          <div className="rounded-xl border border-[#E5E5E5] bg-white py-12 text-center shadow-sm">
+            <p className="text-sm text-[#8A8A8A]">No per-item grades recorded for this report.</p>
           </div>
         )}
       </div>

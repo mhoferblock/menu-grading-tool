@@ -19,25 +19,25 @@ function statusBadge(status: string) {
   const base = 'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium';
   switch (status) {
     case 'Sent':
-      return `${base} bg-green-500/10 text-green-400`;
+      return `${base} bg-[#00D632]/10 text-[#00D632]`;
     case 'Pending':
-      return `${base} bg-amber-500/10 text-amber-400`;
+      return `${base} bg-[#FF9500]/10 text-[#FF9500]`;
     default:
-      return `${base} bg-zinc-700/40 text-zinc-400`;
+      return `${base} bg-[#F6F6F6] text-[#8A8A8A]`;
   }
 }
 
 function scoreClass(score: number) {
-  if (score >= 90) return 'text-green-400';
-  if (score >= 75) return 'text-amber-400';
-  if (score >= 60) return 'text-orange-400';
-  return 'text-red-400';
+  if (score >= 90) return 'text-[#00D632]';
+  if (score >= 75) return 'text-[#FF9500]';
+  if (score >= 60) return 'text-[#FF9500]';
+  return 'text-[#E02B1D]';
 }
 
 export default function Dashboard() {
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold text-zinc-100">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-[#1A1A1A]">Dashboard</h1>
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -48,24 +48,24 @@ export default function Dashboard() {
 
       {/* Recent Activity */}
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-zinc-200">Recent Activity</h2>
-        <div className="overflow-hidden rounded-lg border border-zinc-800">
+        <h2 className="mb-4 text-lg font-semibold text-[#1A1A1A]">Recent Activity</h2>
+        <div className="overflow-hidden rounded-xl border border-[#E5E5E5] shadow-sm">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-zinc-800 bg-zinc-900/60">
+            <thead className="border-b border-[#E5E5E5] bg-white">
               <tr>
                 {['Date', 'Merchant', 'Builder', 'Score', 'Status'].map((h) => (
-                  <th key={h} className="px-4 py-3 font-medium text-zinc-400">
+                  <th key={h} className="px-4 py-3 font-medium text-[#8A8A8A]">
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/60">
+            <tbody className="divide-y divide-[#E5E5E5]">
               {recentActivity.map((row, i) => (
-                <tr key={i} className="transition-colors hover:bg-zinc-900/40">
-                  <td className="px-4 py-3 text-zinc-400">{row.date}</td>
-                  <td className="px-4 py-3 text-zinc-200">{row.merchant}</td>
-                  <td className="px-4 py-3 text-zinc-300">{row.builder}</td>
+                <tr key={i} className="transition-colors hover:bg-[#F6F6F6]">
+                  <td className="px-4 py-3 text-[#8A8A8A]">{row.date}</td>
+                  <td className="px-4 py-3 text-[#1A1A1A]">{row.merchant}</td>
+                  <td className="px-4 py-3 text-[#4A4A4A]">{row.builder}</td>
                   <td className={`px-4 py-3 font-medium tabular-nums ${scoreClass(row.score)}`}>
                     {row.score}
                   </td>

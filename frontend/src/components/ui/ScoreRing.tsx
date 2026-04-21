@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 
 function scoreColor(score: number) {
-  if (score >= 90) return '#22c55e';
-  if (score >= 75) return '#f59e0b';
-  if (score >= 60) return '#f97316';
-  return '#ef4444';
+  if (score >= 90) return '#00D632';
+  if (score >= 80) return '#006AFF';
+  if (score >= 70) return '#FF9500';
+  return '#E02B1D';
 }
 
 interface ScoreRingProps {
@@ -38,7 +38,7 @@ export default function ScoreRing({ score, size = 120 }: ScoreRingProps) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#27272a"
+          stroke="#E5E5E5"
           strokeWidth={strokeWidth}
         />
         <circle
@@ -55,8 +55,8 @@ export default function ScoreRing({ score, size = 120 }: ScoreRingProps) {
         />
       </svg>
       <div className="absolute flex flex-col items-center">
-        <span className="text-2xl font-bold text-zinc-100">{score}</span>
-        <span className="text-xs text-zinc-500">/100</span>
+        <span className="text-2xl font-bold text-[#1A1A1A]">{score}</span>
+        <span className="text-xs text-[#8A8A8A]">/100</span>
       </div>
     </div>
   );
