@@ -1,0 +1,29 @@
+# Git Milestone Rules — Menu Grading Tool
+
+## Auto-Commit Protocol
+- Commit after each logical unit of work (a complete component, a full API route, a service module)
+- Never commit broken code — run checks first
+- Push to GitHub at every milestone
+
+## Commit Message Format
+- Prefix with agent label: `[AGENT-N] descriptive message`
+- Tag milestones: `[MILESTONE] description`
+
+## Milestone Definitions
+1. **Foundation** — Project scaffolding, DB schema, auth, basic routing
+2. **Grading Engine** — All rubric logic, scoring functions, automated checks
+3. **Upload Pipeline** — PDF/image parsing, OCR, AI extraction, catalog fetching
+4. **Report UI** — Score displays, per-item grading, comparison views
+5. **Claude AI Layer** — Adaptive learning, pattern recognition, insights dashboard
+6. **History & Analytics** — Grading history, team performance, trend charts
+7. **Polish & Deploy** — Error handling, loading states, responsive design, deployment
+
+## Push Schedule
+- Push after completing each milestone
+- Push after any critical bug fix
+- Push at end of each work session
+
+## Branch Strategy
+- `main` — stable, production-ready code
+- `feature/*` — feature branches for each milestone
+- Merge to main via PR after milestone completion

@@ -1,0 +1,70 @@
+# Architecture Rules — Menu Grading Tool
+
+## Deployment Model
+- **Runtime**: Vercel (frontend + API routes) or single VPS
+- **Framework**: Next.js 14+ with App Router, TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **Database**: PostgreSQL via Prisma ORM
+
+## Tech Stack (Locked)
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui |
+| Backend | Next.js API Routes |
+| PDF Parsing | pdf.js for text extraction |
+| OCR | Tesseract.js (client-fallback) + Google Vision API (preferred) |
+| AI/LLM | Anthropic Claude API (primary), OpenAI GPT-4o (fallback) |
+| Excel Parsing | xlsx (SheetJS) |
+| Square API | Square Node.js SDK |
+| Database | PostgreSQL via Prisma ORM |
+| Auth | NextAuth.js with email provider |
+| Charts | Recharts |
+| Fuzzy Match | fuse.js |
+| PDF Export | jspdf |
+
+## NO-GO List
+- ❌ Docker (Vercel handles deployment)
+- ❌ Redis / Memcached
+- ❌ Celery / RabbitMQ
+- ❌ WebSockets (use polling or SSE for real-time)
+- ❌ SQLAlchemy or any Python ORM (this is a Node.js project)
+- ❌ CSS-in-JS libraries (use Tailwind)
+- ❌ Other React frameworks (no Remix, no Gatsby)
+
+## API Conventions
+- All API routes under `/api/v1/`
+- RESTful: GET (list/detail), POST (create), PUT (update), DELETE
+- All responses: `{ data, meta }` or `{ error, detail }`
+- Pagination: `?page=1&pageSize=20`
+
+## File Structure
+```
+src/
+├── app/              # Next.js App Router pages
+├── components/       # React components
+│   ├── ui/          # shadcn/ui primitives
+│   ├── upload/      # Upload flow components
+│   ├── grading/     # Grading engine UI
+│   ├── report/      # Report display components
+│   ├── ai/          # Claude AI panel components
+│   └── layout/      # Navigation, sidebar, header
+├── lib/             # Core business logic
+│   ├── grading/     # Rubric scoring engine
+│   ├── parsers/     # PDF, image, Excel parsers
+│   ├── square/      # Square API client
+│   ├── ai/          # Claude AI integration
+│   └── utils/       # Shared utilities
+├── prisma/          # Database schema & migrations
+├── hooks/           # Custom React hooks
+├── stores/          # Zustand stores (if needed)
+├── types/           # TypeScript type definitions
+└── constants/       # Rubric weights, thresholds
+```
+
+## Code Quality
+- One module = one responsibility
+- Keep files under 300 lines
+- Every module has a docstring/JSDoc explaining purpose
+- All prices stored in cents (integers)
+- All grading functions independently testable
+- LLM calls must have graceful fallbacks

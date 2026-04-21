@@ -1,0 +1,54 @@
+# Grading Rubric Rules — Menu Grading Tool
+
+## Sacred Weights (DO NOT CHANGE without explicit instruction)
+| Section | Weight | Full (10pts) | Partial (5pts) | None (0pts) |
+|---------|--------|-------------|----------------|-------------|
+| NEATNESS: Capitalization/punctuation/spelling | 10 | 0-1 errors | 2-5 errors | >5 errors |
+| ORGANIZATION: Variations correctly identified | 10 | 0 errors | 1-3 errors | >3 errors |
+| ORGANIZATION: Modifier ordering | 10 | 0 errors | 1-3 sets wrong | >3 or illogical |
+| ORGANIZATION: Menu grid/display groups | 10 | All criteria met | 1-2 not met | ≥3 not met |
+| ACCURACY: Auto Add to Check | 10 | 0-1 errors | 2-5 errors | >5 errors |
+| ACCURACY: Modifier sets correct | 10 | 0-1 errors | 2-3 sets wrong | >3 sets wrong |
+| ACCURACY: Items named/no duplicates | 10 | 0-1 errors | 2-3 errors | >3 errors |
+| ACCURACY: Correct locations/groups | 10 | 0-1 errors | 2-3 errors | >3 errors |
+| THOROUGHNESS: Special instructions followed | 10 | 100% | 75-99% | <75% |
+| THOROUGHNESS: Critical thinking | 10 | Evident | Attempted but failed | No effort |
+| **TOTAL** | **100** | | | |
+
+## Title Case Rules
+- Capitalize first letter of every word EXCEPT: of, with, and, the, a, an, in, on, at, to, for, or, but, nor
+- First word always capitalized regardless
+- Units abbreviated without spaces: 8oz, 250ml, 5lb
+
+## Auto-Add-to-Check Rules
+| Market | Condition | Auto-Add |
+|--------|-----------|----------|
+| US/EU | Drink, no variations, no modifiers | YES |
+| US/EU | Drink with variations or modifiers | NO |
+| US/EU | Non-drink item | NO |
+| AU | ANY item, no variations, no modifiers | YES |
+| AU | ANY item with variations or modifiers | NO |
+
+## Variation Rules
+- Variations = mutually exclusive options with DIFFERENT prices
+- Order: smallest → largest OR cheapest → most expensive
+- Item name must NOT appear in variation name
+- If each option has unique description → separate items instead
+
+## Modifier Rules
+- Modifiers = optional customizations applied across variations
+- Required modifier sets appear FIRST
+- Options within sets are ALPHABETIZED
+- Context must be included (e.g., "Chocolate Shake" not "Chocolate")
+- Nested modifiers used when needed (e.g., Salad → Ranch/Balsamic)
+- Pricing must match menu
+- Min/max selections must be correct
+
+## Duplicate Rules
+- Duplicates ONLY allowed when price/modifiers differ per service
+- Must be named accordingly: "Caesar Salad - Lunch", "Caesar Salad - Dinner"
+- Multi-location items should NOT be duplicated
+
+## Item Naming Rules
+- Must NOT contain the word "or" (split into separate items)
+- Must include context (e.g., "Chocolate Shake" not "Chocolate")
