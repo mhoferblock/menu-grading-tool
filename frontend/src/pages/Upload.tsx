@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Upload as UploadIcon,
   ChevronDown,
-  FileText,
   CheckCircle2,
   Loader2,
   X,
@@ -11,8 +10,6 @@ import {
 } from 'lucide-react';
 import { api } from '@/api/client';
 import type { Builder, Grader } from '@/types';
-
-const markets = ['US', 'EU', 'AU'] as const;
 
 interface UploadResult {
   id: string;
@@ -24,7 +21,6 @@ interface UploadResult {
 }
 
 interface CatalogResult {
-  merchant_id?: string;
   filename?: string;
   item_count: number;
   items: { name: string; price?: number; category?: string; description?: string }[];
@@ -33,9 +29,6 @@ interface CatalogResult {
 export default function Upload() {
   const navigate = useNavigate();
 
-  const [catalogSource, setCatalogSource] = useState('square');
-  const [merchantId, setMerchantId] = useState('');
-  const [activeMarket, setActiveMarket] = useState<string>('US');
   const [catalogFile, setCatalogFile] = useState<File | null>(null);
 
   const [menuFile, setMenuFile] = useState<File | null>(null);
@@ -74,21 +67,6 @@ export default function Upload() {
       setMenuUploading(false);
     }
   }, []);
-
-  const handleCatalogFetch = useCallback(async () => {
-    if (!merchantId.trim()) return;
-    setCatalogLoading(true);
-    setCatalogError('');
-    setCatalogResult(null);
-    try {
-      const result = await api.catalog.fetch(merchantId.trim(), activeMarket);
-      setCatalogResult(result);
-    } catch (e: unknown) {
-      setCatalogError(e instanceof Error ? e.message : 'Fetch failed');
-    } finally {
-      setCatalogLoading(false);
-    }
-  }, [merchantId, activeMarket]);
 
   const handleCatalogUpload = useCallback(async (file: File) => {
     setCatalogFile(file);
@@ -194,24 +172,12 @@ export default function Upload() {
         {/* Catalog Source */}
         <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
           <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-3">
-            <h2 className="text-sm font-semibold text-zinc-100">Catalog Source</h2>
+            <h2 className="text-sm font-semibold text-zinc-100">Catalog Export</h2>
             <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400">
               Step 2
             </span>
           </div>
           <div className="space-y-4 p-5">
-            <div className="relative">
-              <select
-                value={catalogSource}
-                onChange={(e) => { setCatalogSource(e.target.value); clearCatalog(); }}
-                className="w-full appearance-none rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 pr-8 text-sm text-zinc-200 focus:border-blue-500 focus:outline-none"
-              >
-                <option value="square">Square Catalog (API)</option>
-                <option value="excel">Excel Export Upload</option>
-              </select>
-              <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-            </div>
-
             {catalogResult ? (
               <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
                 <div className="flex items-center justify-between">
@@ -246,102 +212,51 @@ export default function Upload() {
                   </div>
                 )}
               </div>
-            ) : catalogSource === 'square' ? (
-              <>
-                <input
-                  type="text"
-                  placeholder="Square Merchant ID..."
-                  value={merchantId}
-                  onChange={(e) => setMerchantId(e.target.value)}
-                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
-                />
-
-                <div className="flex gap-2">
-                  {markets.map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => setActiveMarket(m)}
-                      className={`rounded-full border px-3 py-1 text-sm transition-colors ${
-                        activeMarket === m
-                          ? 'border-emerald-500/30 bg-emerald-500/20 text-emerald-400'
-                          : 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600'
-                      }`}
-                    >
-                      {m}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={handleCatalogFetch}
-                  disabled={!merchantId.trim() || catalogLoading}
-                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {catalogLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" /> Fetching Catalog...
-                    </>
-                  ) : (
-                    <>
-                      <FileText className="h-4 w-4" /> Fetch Catalog
-                    </>
-                  )}
-                </button>
-
-                {catalogError && (
-                  <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2 text-xs text-red-400">
-                    <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    <span>{catalogError}</span>
-                  </div>
-                )}
-              </>
             ) : (
-              <>
-                <div
-                  className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-700 py-10 text-center hover:border-zinc-600"
-                  onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const file = e.dataTransfer.files?.[0];
-                    if (file) handleCatalogUpload(file);
-                  }}
-                >
-                  {catalogLoading ? (
-                    <>
-                      <Loader2 className="mb-3 h-8 w-8 animate-spin text-blue-400" />
-                      <p className="text-sm text-zinc-300">Parsing {catalogFile?.name}...</p>
-                    </>
-                  ) : (
-                    <>
-                      <UploadIcon className="mb-3 h-8 w-8 text-zinc-500" />
-                      <p className="text-sm text-zinc-300">Upload catalog Excel export</p>
-                      <label className="mt-3 cursor-pointer rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700">
-                        Browse Files
-                        <input
-                          type="file"
-                          accept=".xlsx,.xls,.csv"
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleCatalogUpload(file);
-                          }}
-                        />
-                      </label>
-                      <p className="mt-2 text-xs text-zinc-500">
-                        Supports .xlsx, .xls, .csv
-                      </p>
-                    </>
-                  )}
-                </div>
-
-                {catalogError && (
-                  <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2 text-xs text-red-400">
-                    <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                    <span>{catalogError}</span>
-                  </div>
+              <div
+                className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-700 py-10 text-center hover:border-zinc-600"
+                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) handleCatalogUpload(file);
+                }}
+              >
+                {catalogLoading ? (
+                  <>
+                    <Loader2 className="mb-3 h-8 w-8 animate-spin text-blue-400" />
+                    <p className="text-sm text-zinc-300">Parsing {catalogFile?.name}...</p>
+                  </>
+                ) : (
+                  <>
+                    <UploadIcon className="mb-3 h-8 w-8 text-zinc-500" />
+                    <p className="text-sm text-zinc-300">Upload Square catalog export</p>
+                    <label className="mt-3 cursor-pointer rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700">
+                      Browse Files
+                      <input
+                        type="file"
+                        accept=".xlsx,.xls,.csv"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleCatalogUpload(file);
+                        }}
+                      />
+                    </label>
+                    <p className="mt-2 text-xs text-zinc-500">
+                      Export from Square Dashboard as .xlsx, .xls, or .csv
+                    </p>
+                  </>
                 )}
-              </>
+              </div>
+            )}
+
+            {catalogError && (
+              <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2 text-xs text-red-400">
+                <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>{catalogError}</span>
+              </div>
             )}
           </div>
         </div>
