@@ -6,8 +6,9 @@ node_modules/
 # Build
 .next/
 out/
-dist/
 build/
+# Keep frontend/dist/ — needed for deployment
+!/frontend/dist/
 
 # Env
 .env
