@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowLeft, Send } from 'lucide-react';
+import { ArrowLeft, Send, Loader2 } from 'lucide-react';
 import ScoreRing from '@/components/ui/ScoreRing';
 import type { GradingReport } from '@/types';
 
@@ -20,6 +20,8 @@ const CC_EMAIL = 'menugradingtoolresponses@squareup.com';
 
 export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProps) {
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [notes, setNotes] = useState('');
 
   const r = report;
@@ -74,11 +76,31 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
         </button>
         <h1 className="text-lg font-semibold text-zinc-100">Preview Feedback Email</h1>
         <button
-          onClick={() => setSent(true)}
-          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+          disabled={sending}
+          onClick={async () => {
+            setSending(true);
+            setError(null);
+            try {
+              const res = await fetch(`/api/v1/reports/${r.id}/feedback`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ personal_notes: notes || null }),
+              });
+              if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.detail || `Server error (${res.status})`);
+              }
+              setSent(true);
+            } catch (err) {
+              setError(err instanceof Error ? err.message : 'Failed to send feedback. Please try again.');
+            } finally {
+              setSending(false);
+            }
+          }}
+          className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 disabled:opacity-50"
         >
-          <Send className="h-4 w-4" />
-          Send Feedback
+          {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          {sending ? 'Sending...' : 'Send Feedback'}
         </button>
       </div>
 
@@ -201,28 +223,30 @@ export default function FeedbackPreview({ report, onClose }: FeedbackPreviewProp
           These notes will be appended to the email above.
         </p>
       </div>
+
+      {error && (
+        <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
 
 function issueRowColor(issue: string) {
-  switch (issue) {
-    case 'price': return 'bg-red-500/5';
-    case 'capitalization': return 'bg-amber-500/5';
-    case 'modifier': return 'bg-amber-500/5';
-    case 'duplicate': return 'bg-blue-500/5';
-    case 'missing': return 'bg-red-500/5';
-    default: return '';
-  }
+  const lower = issue.toLowerCase();
+  if (lower.includes('price') || lower.includes('missing')) return 'bg-red-500/5';
+  if (lower.includes('capital') || lower.includes('title case')) return 'bg-amber-500/5';
+  if (lower.includes('modifier') || lower.includes('variation')) return 'bg-amber-500/5';
+  if (lower.includes('duplicate')) return 'bg-blue-500/5';
+  return '';
 }
 
 function issueBadgeColor(issue: string) {
-  switch (issue) {
-    case 'price': return 'bg-red-500/20 text-red-400';
-    case 'capitalization': return 'bg-amber-500/20 text-amber-400';
-    case 'modifier': return 'bg-amber-500/20 text-amber-400';
-    case 'duplicate': return 'bg-blue-500/20 text-blue-400';
-    case 'missing': return 'bg-red-500/20 text-red-400';
-    default: return 'bg-zinc-700 text-zinc-400';
-  }
+  const lower = issue.toLowerCase();
+  if (lower.includes('price') || lower.includes('missing')) return 'bg-red-500/20 text-red-400';
+  if (lower.includes('capital') || lower.includes('title case')) return 'bg-amber-500/20 text-amber-400';
+  if (lower.includes('modifier') || lower.includes('variation')) return 'bg-amber-500/20 text-amber-400';
+  if (lower.includes('duplicate')) return 'bg-blue-500/20 text-blue-400';
+  return 'bg-zinc-700 text-zinc-400';
 }

@@ -282,7 +282,7 @@ function BuilderProfile() {
         </div>
         <div className="flex-1">
           <h2 className="text-xl font-bold text-zinc-100">Carlos Zamora</h2>
-          <p className="text-sm text-zinc-400">czamora@bpo.team · GT Team</p>
+          <p className="text-sm text-zinc-400">czamora-bpo@bpofit.com · GT Team</p>
         </div>
         <ScoreRing score={76} size={56} />
       </div>
@@ -358,6 +358,7 @@ function BuilderProfile() {
       <section className="rounded-lg border border-zinc-800 bg-zinc-900">
         <button
           onClick={() => setCoachingOpen(!coachingOpen)}
+          aria-expanded={coachingOpen}
           className="flex w-full items-center justify-between px-6 py-4 text-left"
         >
           <div className="flex items-center gap-3">

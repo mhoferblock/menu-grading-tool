@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/upload', label: 'Upload & Grade', icon: Upload },
+  { to: '/upload', label: 'Upload & Compare', icon: Upload },
   { to: '/reports', label: 'Reports', icon: FileText },
   { to: '/quality', label: 'Quality', icon: BarChart3 },
   { to: '/ai', label: 'AI Insights', icon: Brain },

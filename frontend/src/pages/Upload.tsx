@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Upload as UploadIcon, ChevronDown } from 'lucide-react';
 
 const markets = ['US', 'EU', 'AU'] as const;
@@ -10,6 +11,7 @@ const teams = [
 ];
 
 export default function Upload() {
+  const navigate = useNavigate();
   const [catalogSource, setCatalogSource] = useState('square');
   const [merchantId, setMerchantId] = useState('');
   const [activeMarket, setActiveMarket] = useState<string>('US');
@@ -35,9 +37,10 @@ export default function Upload() {
             <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-700 py-12 text-center hover:border-zinc-600">
               <UploadIcon className="mb-3 h-10 w-10 text-zinc-500" />
               <p className="text-sm text-zinc-300">Drop PDF or image of physical menu</p>
-              <button className="mt-4 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700">
+              <label className="mt-4 cursor-pointer rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700">
                 Browse Files
-              </button>
+                <input type="file" accept=".pdf,.png,.jpg,.jpeg" className="hidden" />
+              </label>
               <p className="mt-3 text-xs text-zinc-500">
                 Supports PDF, PNG, JPG. OCR + AI extraction for scanned menus.
               </p>
@@ -90,7 +93,10 @@ export default function Upload() {
               ))}
             </div>
 
-            <button className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500">
+            <button
+              onClick={() => alert('Catalog fetch will connect to Square API once configured. Enter a Merchant ID above.')}
+              className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
+            >
               Fetch Catalog
             </button>
           </div>
@@ -159,7 +165,10 @@ export default function Upload() {
 
       {/* Start Grading */}
       <div className="flex justify-end">
-        <button className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-500">
+        <button
+          onClick={() => navigate('/reports')}
+          className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-500"
+        >
           Start Grading
         </button>
       </div>

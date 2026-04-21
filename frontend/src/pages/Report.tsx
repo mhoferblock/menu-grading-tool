@@ -7,7 +7,7 @@ import FeedbackPreview from '@/components/feedback/FeedbackPreview';
 import type { GradingReport, ItemGrade } from '@/types';
 
 const sampleReport: GradingReport = {
-  id: 'rpt-001',
+  id: 'report-001',
   merchant_name: 'Artisan Coffee House',
   market: 'US',
   graded_by: 'yecheverria-bpo@bpofit.com',
@@ -20,13 +20,13 @@ const sampleReport: GradingReport = {
   },
   item_grades: [
     { item_name: 'Espresso', category_name: 'Hot Drinks', overall_score: 95, neatness: 10, organization: 28, accuracy: 38, thoroughness: 19, issues: [] },
-    { item_name: 'Caramel Macchiato', category_name: 'Hot Drinks', overall_score: 88, neatness: 9, organization: 26, accuracy: 35, thoroughness: 18, issues: ['modifier'] },
-    { item_name: 'Iced Americano', category_name: 'Cold Drinks', overall_score: 72, neatness: 7, organization: 22, accuracy: 28, thoroughness: 15, issues: ['price', 'modifier'] },
+    { item_name: 'Caramel Macchiato', category_name: 'Hot Drinks', overall_score: 88, neatness: 9, organization: 26, accuracy: 35, thoroughness: 18, issues: ['Price: menu $5.50 vs catalog $5.75'] },
+    { item_name: 'Iced Americano', category_name: 'Cold Drinks', overall_score: 72, neatness: 7, organization: 22, accuracy: 28, thoroughness: 15, issues: ['Missing modifier: Milk Choice', 'Not auto-add despite no variations'] },
     { item_name: 'Avocado Toast', category_name: 'Food', overall_score: 90, neatness: 9, organization: 27, accuracy: 36, thoroughness: 18, issues: [] },
-    { item_name: 'caesar salad', category_name: 'Food', overall_score: 60, neatness: 6, organization: 18, accuracy: 24, thoroughness: 12, issues: ['capitalization', 'price', 'missing'] },
+    { item_name: 'caesar salad', category_name: 'Food', overall_score: 60, neatness: 6, organization: 18, accuracy: 24, thoroughness: 12, issues: ['Not Title Case', 'Missing nested dressing modifier', 'Duplicate without service distinction'] },
     { item_name: 'Chocolate Chip Cookie', category_name: 'Bakery', overall_score: 92, neatness: 9, organization: 28, accuracy: 37, thoroughness: 18, issues: [] },
-    { item_name: 'Fresh Squeezed OJ', category_name: 'Cold Drinks', overall_score: 78, neatness: 8, organization: 23, accuracy: 30, thoroughness: 17, issues: ['modifier', 'capitalization'] },
-    { item_name: 'Bagel With Cream cheese', category_name: 'Bakery', overall_score: 68, neatness: 7, organization: 20, accuracy: 26, thoroughness: 15, issues: ['capitalization', 'duplicate', 'capitalization'] },
+    { item_name: 'Fresh Squeezed OJ', category_name: 'Cold Drinks', overall_score: 78, neatness: 8, organization: 23, accuracy: 30, thoroughness: 17, issues: ['Unit format: 16 oz should be 16oz', 'Modifier options not alphabetized'] },
+    { item_name: 'Bagel With Cream cheese', category_name: 'Bakery', overall_score: 68, neatness: 7, organization: 20, accuracy: 26, thoroughness: 15, issues: ['Inconsistent capitalization', 'Missing variation sizes'] },
   ],
   issues: {
     price_discrepancies: 2,
@@ -96,7 +96,10 @@ export default function Report() {
           </p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700">
+          <button
+            onClick={() => window.print()}
+            className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700"
+          >
             <FileDown className="h-4 w-4" />
             Export PDF
           </button>
@@ -148,10 +151,10 @@ export default function Report() {
                 <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Item</th>
                 <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Category</th>
                 <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Score</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">N</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">O</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">A</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">T</th>
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Neatness">N</th>
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Organization">O</th>
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Accuracy">A</th>
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Thoroughness">T</th>
                 <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Issues</th>
               </tr>
             </thead>

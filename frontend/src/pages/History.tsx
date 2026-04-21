@@ -23,7 +23,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
 const historyRows = [
   { date: 'Apr 21', merchant: 'Artisan Coffee House', builder: 'C. Zamora', grader: 'yecheverria-bpo', market: 'US', score: 82, feedback: 'Draft', tone: '' },
   { date: 'Apr 20', merchant: 'Tokyo Ramen Bar', builder: 'A. Cruz', grader: 'sebastianguzman-bpo', market: 'US', score: 91, feedback: 'Sent', tone: 'success' },
-  { date: 'Apr 20', merchant: 'Melbourne Bistro', builder: 'R. Santos', grader: 'alyanna-bpo', market: 'AU', score: 74, feedback: 'Pending Review', tone: 'warning' },
+  { date: 'Apr 20', merchant: 'Melbourne Bistro', builder: 'R. Santos', grader: 'alyanna-bpo', market: 'AU', score: 74, feedback: 'Pending', tone: 'warning' },
   { date: 'Apr 19', merchant: 'Bella Italia', builder: 'L. Reyes', grader: 'randell-bpo', market: 'EU', score: 88, feedback: 'Sent', tone: '' },
   { date: 'Apr 19', merchant: 'Green Bowl Kitchen', builder: 'C. Zamora', grader: 'czamora-bpo', market: 'US', score: 67, feedback: 'Sent', tone: 'danger' },
   { date: 'Apr 18', merchant: 'Sunrise Bakery', builder: 'S. Guzman', grader: 'leonel-bpo', market: 'US', score: 93, feedback: 'Sent', tone: 'success' },
@@ -79,6 +79,7 @@ export default function History() {
           <input
             type="text"
             placeholder="Search history…"
+            aria-label="Search grading history"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="rounded-lg border border-zinc-800 bg-zinc-900 py-2 pl-9 pr-4 text-sm text-zinc-100 placeholder-zinc-500 outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600"

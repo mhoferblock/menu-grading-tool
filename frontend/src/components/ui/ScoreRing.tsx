@@ -14,10 +14,11 @@ interface ScoreRingProps {
 
 export default function ScoreRing({ score, size = 120 }: ScoreRingProps) {
   const circleRef = useRef<SVGCircleElement>(null);
+  const clamped = Math.max(0, Math.min(100, score));
   const strokeWidth = size * 0.08;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
+  const offset = circumference - (clamped / 100) * circumference;
 
   useEffect(() => {
     const el = circleRef.current;
@@ -46,7 +47,7 @@ export default function ScoreRing({ score, size = 120 }: ScoreRingProps) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke={scoreColor(score)}
+          stroke={scoreColor(clamped)}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}

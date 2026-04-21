@@ -12,7 +12,7 @@ interface GradeBarProps {
 }
 
 export default function GradeBar({ label, score, max }: GradeBarProps) {
-  const pct = max > 0 ? (score / max) * 100 : 0;
+  const pct = Math.min(100, max > 0 ? (score / max) * 100 : 0);
 
   return (
     <div className="flex items-center gap-3">
