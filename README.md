@@ -10,6 +10,8 @@ Enables GSO and BPO team members to QA menu builds for Square sellers by:
 2. **Comparing** it against a Square Catalog (API) or Excel export
 3. **Grading** against a standardized rubric (Neatness, Organization, Accuracy, Thoroughness)
 4. **Producing** a detailed scored report with per-item grades and AI-powered recommendations
+5. **Tracking** builder and grader quality over time with trend analytics
+6. **Emailing** compiled feedback directly to the menu builder (CC: menugradingtoolresponses@squareup.com)
 
 ## Tech Stack
 
@@ -85,6 +87,14 @@ Claude serves as an adaptive learning agent that:
 - **Grades** subjective rubric criteria with explanations
 - **Learns** from user corrections to improve over time
 - **Recognizes** patterns across all graded menus
+- **Coaches** per-builder recommendations based on quality trends
+
+## Quality Tracking
+
+- **Per-builder quality** — average scores, trend lines, common issues, improvement rate
+- **Per-grader metrics** — volume, avg grade time, consistency, override rate
+- **Quality snapshots** — every submission captures a point-in-time record for analytics
+- **Feedback loop** — compiled QA reports emailed to builders with coaching notes
 
 ## License
 

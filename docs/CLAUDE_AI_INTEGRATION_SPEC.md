@@ -213,6 +213,87 @@ For each pattern found, provide:
 ### 6. Database Schema (Prisma)
 
 ```prisma
+// ─── Builder Attribution ───────────────────────────────────
+model Builder {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  team      String?  // GT, MNL, GSO, External
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reports   GradingReport[]
+}
+
+// ─── Grading Report (with builder + feedback fields) ──────
+model GradingReport {
+  id              String   @id @default(cuid())
+  merchantName    String
+  market          String   // US, EU, AU
+  gradedBy        String   // grader email
+  overallScore    Float
+  sectionScores   Json     // { neatness, organization, accuracy, thoroughness }
+  itemGrades      Json     // per-item grade array
+  issues          Json     // categorized issue counts
+  specialRequests String?
+  menuSourceId    String
+  catalogSourceId String
+
+  // Builder attribution
+  builderId       String?
+  builder         Builder? @relation(fields: [builderId], references: [id])
+  builderName     String   // denormalized for quick display
+  builderEmail    String   // where feedback gets sent
+
+  // Feedback tracking
+  feedbackStatus  String   @default("draft") // draft, pending_review, approved, sent, disputed
+  feedbackSentAt  DateTime?
+  feedbackSentBy  String?  // email of person who hit Send
+  feedbackNotes   String?  // grader's personal notes appended to email
+  reviewerNotes   String?  // internal notes from lead, not sent to builder
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  corrections     AiCorrection[]
+  qualitySnapshot QualitySnapshot?
+  feedbackLogs    FeedbackLog[]
+}
+
+// ─── Quality Snapshot (per-submission metrics) ────────────
+model QualitySnapshot {
+  id             String   @id @default(cuid())
+  reportId       String   @unique
+  report         GradingReport @relation(fields: [reportId], references: [id])
+  graderEmail    String
+  builderEmail   String
+  overallScore   Float
+  sectionScores  Json     // { neatness, organization, accuracy, thoroughness }
+  issueCount     Int
+  issueSummary   Json     // { priceDiscrepancies, capitalizationErrors, ... }
+  gradeTimeMs    Int      // how long the grader took
+  createdAt      DateTime @default(now())
+
+  @@index([graderEmail])
+  @@index([builderEmail])
+  @@index([createdAt])
+}
+
+// ─── Feedback Email Log ───────────────────────────────────
+model FeedbackLog {
+  id            String   @id @default(cuid())
+  reportId      String
+  report        GradingReport @relation(fields: [reportId], references: [id])
+  sentTo        String   // builder email
+  ccTo          String   // menugradingtoolresponses@squareup.com
+  sentBy        String   // grader/lead who triggered
+  subject       String
+  bodyHtml      String
+  status        String   // sent, delivered, bounced, failed
+  externalId    String?  // email service message ID for tracking
+  createdAt     DateTime @default(now())
+}
+
+// ─── AI Models (unchanged) ────────────────────────────────
 model AiCorrection {
   id            String   @id @default(cuid())
   reportId      String
@@ -256,7 +337,35 @@ model AiGradeLog {
 }
 ```
 
-### 7. Graceful Degradation
+### 7. Per-Builder Pattern Analysis
+
+Claude analyzes quality patterns on a per-builder basis to generate targeted coaching recommendations.
+
+**Trigger:** Runs after every 5th submission for a given builder, or on-demand.
+
+**Prompt Template:**
+```
+ROLE: You are a Menu Build Quality Analyst. Analyze the grading history for 
+this specific builder and identify patterns, strengths, and areas for improvement.
+
+BUILDER: {builderName} ({builderEmail})
+TEAM: {builderTeam}
+RECENT REPORTS (last N):
+{recentReportSummaries}
+
+Provide your analysis as JSON:
+{
+  "strengths": ["areas where builder consistently scores well"],
+  "weaknesses": ["recurring issue patterns"],
+  "trend": "improving" | "stable" | "declining",
+  "recommendations": ["specific, actionable coaching tips"],
+  "comparedToTeam": "above_average" | "average" | "below_average"
+}
+```
+
+**Output:** Stored per builder, surfaced on Builder Profile page and optionally included in feedback emails as a "coaching summary" section.
+
+### 8. Graceful Degradation
 
 If Claude API is unavailable:
 1. All automated checks (title case, pricing, alphabetization, etc.) still run
@@ -266,7 +375,7 @@ If Claude API is unavailable:
 5. Retry logic: 3 attempts with exponential backoff (1s, 3s, 9s)
 6. Circuit breaker: after 5 consecutive failures, disable AI for 5 minutes
 
-### 8. Cost Management
+### 9. Cost Management
 
 - **Token budget per menu**: ~4,000 input + ~1,000 output tokens per item
 - **Batch optimization**: Group items by category for context-efficient prompting
@@ -274,7 +383,7 @@ If Claude API is unavailable:
 - **Model tiering**: Use Haiku for simple checks, Sonnet for complex grading
 - **Monthly estimate**: ~50 menus/day × 30 items × 5k tokens = ~7.5M tokens/month
 
-### 9. Confidence Display in UI
+### 10. Confidence Display in UI
 
 | Confidence | Display | Color |
 |------------|---------|-------|

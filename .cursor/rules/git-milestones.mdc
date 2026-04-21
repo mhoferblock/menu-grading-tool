@@ -10,13 +10,14 @@
 - Tag milestones: `[MILESTONE] description`
 
 ## Milestone Definitions
-1. **Foundation** — Project scaffolding, DB schema, auth, basic routing
+1. **Foundation** — Project scaffolding, DB schema (incl Builder, QualitySnapshot), auth, basic routing
 2. **Grading Engine** — All rubric logic, scoring functions, automated checks
-3. **Upload Pipeline** — PDF/image parsing, OCR, AI extraction, catalog fetching
-4. **Report UI** — Score displays, per-item grading, comparison views
-5. **Claude AI Layer** — Adaptive learning, pattern recognition, insights dashboard
-6. **History & Analytics** — Grading history, team performance, trend charts
-7. **Polish & Deploy** — Error handling, loading states, responsive design, deployment
+3. **Upload Pipeline** — PDF/image parsing, OCR, AI extraction, catalog fetching, builder attribution input
+4. **Report UI & Feedback** — Score displays, per-item grading, comparison views, feedback email preview/send
+5. **Claude AI Layer** — Adaptive learning, pattern recognition, per-builder coaching, insights dashboard
+6. **Quality Tracking & Analytics** — Quality snapshots, builder profiles, grader metrics, team dashboards, SLA tracking
+7. **Review Workflow & Notifications** — Approval flow, direct-send vs review-then-send, notifications, audit trail, role-based views
+8. **Polish & Deploy** — Error handling, auto-save, loading states, responsive design, deployment
 
 ## Push Schedule
 - Push after completing each milestone

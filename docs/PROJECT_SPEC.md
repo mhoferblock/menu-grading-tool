@@ -58,7 +58,7 @@ A standalone web-based Menu QA Grading Tool that enables GSO and BPO team member
 
 ### Phase 1: Foundation (Milestone 1)
 - [x] Project scaffolding (Next.js 14, TypeScript, Tailwind, shadcn/ui)
-- [ ] Prisma schema and database setup
+- [ ] Prisma schema and database setup (including Builder, QualitySnapshot models)
 - [ ] NextAuth.js email authentication with allowlist
 - [ ] Basic layout (sidebar navigation, header, theme)
 - [ ] Landing/dashboard page
@@ -83,15 +83,20 @@ A standalone web-based Menu QA Grading Tool that enables GSO and BPO team member
 - [ ] Excel catalog parser (SheetJS)
 - [ ] Parsed menu preview with edit capability
 - [ ] Catalog normalization layer
+- [ ] Builder attribution input (name, email, team with autocomplete)
 
-### Phase 4: Report UI (Milestone 4)
+### Phase 4: Report UI & Feedback (Milestone 4)
 - [ ] Overall score ring display
 - [ ] Section breakdown bar charts
 - [ ] Per-item grade cards (expandable)
 - [ ] Side-by-side comparison view
 - [ ] Issue highlighting with severity pills
+- [ ] Builder attribution display on reports
+- [ ] Feedback email preview modal
+- [ ] Send feedback email (to builder, CC menugradingtoolresponses@squareup.com)
+- [ ] Feedback status tracking (draft → sent)
 - [ ] PDF export (jspdf)
-- [ ] Share functionality
+- [ ] Shareable report links
 
 ### Phase 5: Claude AI Layer (Milestone 5)
 - [ ] Menu extraction prompts
@@ -101,21 +106,99 @@ A standalone web-based Menu QA Grading Tool that enables GSO and BPO team member
 - [ ] Learned rules management
 - [ ] Confidence indicators in UI
 - [ ] Graceful degradation when AI unavailable
+- [ ] Per-builder pattern detection (Claude identifies recurring issues per builder)
 
-### Phase 6: History & Analytics (Milestone 6)
-- [ ] Grading history table (filterable, sortable)
+### Phase 6: Quality Tracking & Analytics (Milestone 6)
+- [ ] Quality snapshot capture per submission
+- [ ] Grading history table (filterable, sortable) with builder column
+- [ ] Builder profile page (avg score, trends, common issues, improvement rate)
+- [ ] Grader profile page (volume, avg time, score distribution, override rate)
+- [ ] Per-builder quality trend charts
+- [ ] Per-grader quality metrics
+- [ ] Team performance dashboard (GT vs MNL comparison)
 - [ ] Score distribution charts
-- [ ] Team performance trends
-- [ ] Individual reviewer metrics
+- [ ] SLA / turnaround time tracking
 - [ ] Export functionality
 
-### Phase 7: Polish & Deploy (Milestone 7)
+### Phase 7: Review Workflow & Notifications (Milestone 7)
+- [ ] Review & approval workflow (lead reviews before feedback is sent)
+- [ ] Direct-send vs review-then-send modes (configurable per team)
+- [ ] In-app notification system for status changes
+- [ ] Audit trail / change log
+- [ ] Role-based dashboards (grader vs lead vs director views)
+
+### Phase 8: Polish & Deploy (Milestone 8)
 - [ ] Error handling (all error states from spec)
 - [ ] Loading skeletons and progress states
+- [ ] Auto-save / draft persistence
 - [ ] Responsive design (tablet support)
 - [ ] Keyboard shortcuts
 - [ ] Accessibility (WCAG 2.1 AA)
 - [ ] Production deployment
+
+## Quality Tracking System
+
+### Per-Submission Quality Snapshots
+Every grading submission captures a point-in-time quality record for both the grader (reviewer) and the builder. This powers all trend analytics without recomputing from raw reports.
+
+**Tracked per submission:**
+- Overall score and section breakdown scores
+- Issue count and categorized issue summary
+- Time-to-grade (how long the grader spent)
+- Builder and grader attribution
+- Market and merchant context
+
+### Per-Builder Quality Tracking
+Tracks how well each menu builder performs over time:
+- Average score + trend line (improving or declining?)
+- Most common issue categories
+- Score by rubric section (strengths/weaknesses)
+- Recent reports list
+- Improvement rate (score delta between first and latest)
+
+### Per-Grader (Reviewer) Quality Tracking
+Tracks grader consistency and throughput:
+- Total menus graded (all time, this month, this week)
+- Average time per grade (SLA tracking)
+- Score distribution (are they consistently harsh or lenient?)
+- Override rate (how often leads change their grades on review)
+
+## Builder Attribution
+
+### How Builders Are Tracked
+The grader manually enters the builder's information during the upload flow:
+- **Builder Name** — text input with autocomplete from previous entries
+- **Builder Email** — validated email, used as the feedback destination
+- **Builder Team** — dropdown: GT, MNL, GSO, External
+
+The Builder database is built organically as graders enter names. After the first entry, autocomplete suggests matching builders on future grades.
+
+## Feedback Email System
+
+### Compilation
+The feedback email is a structured summary of the grading report:
+- Subject: `Menu QA Report — {Merchant Name} — Score: {Score}/100`
+- Overall score with grade letter (A/B/C/D/F)
+- Section breakdown (Neatness, Organization, Accuracy, Thoroughness)
+- Top issues found (bulleted, max 10)
+- Per-item issues table
+- Recommendations for improvement
+- Claude AI suggestions (if applicable)
+- Link back to full report in the tool
+
+### Submission Flow
+1. Grader finishes grading
+2. Grader previews the compiled feedback email
+3. Grader optionally adds personal notes/context
+4. Grader clicks "Send Feedback"
+5. Email sent to builder's email address
+6. CC always goes to `menugradingtoolresponses@squareup.com` (hardcoded)
+7. Reply-To set to the grader's email for follow-up questions
+8. Report status updated to "sent", delivery logged in audit trail
+
+### Send Modes (configurable per team in settings)
+1. **Direct Send** — Grader sends feedback immediately after grading
+2. **Review-Then-Send** — Lead reviews and approves before feedback is sent
 
 ## API Routes
 
@@ -132,11 +215,22 @@ A standalone web-based Menu QA Grading Tool that enables GSO and BPO team member
 | `/api/v1/reports/:id` | GET | Get report detail |
 | `/api/v1/reports/:id` | PUT | Update report |
 | `/api/v1/reports/:id/export` | GET | Export report as PDF |
+| `/api/v1/reports/:id/feedback` | GET | Preview compiled feedback email |
+| `/api/v1/reports/:id/feedback` | POST | Send feedback email to builder |
+| `/api/v1/reports/:id/feedback/status` | GET | Email delivery status |
+| `/api/v1/builders` | GET | List/search builders (autocomplete) |
+| `/api/v1/builders` | POST | Create new builder |
+| `/api/v1/builders/:id` | GET | Builder profile + quality history |
+| `/api/v1/builders/:id/trend` | GET | Builder score trend data |
 | `/api/v1/ai/extract` | POST | AI menu extraction |
 | `/api/v1/ai/grade` | POST | AI-grade items |
 | `/api/v1/ai/insights` | GET | Get AI insights |
 | `/api/v1/ai/corrections` | POST | Submit correction |
 | `/api/v1/ai/rules` | GET | List learned rules |
+| `/api/v1/quality/graders` | GET | All grader quality metrics |
+| `/api/v1/quality/graders/:email` | GET | Single grader quality profile |
+| `/api/v1/quality/builders` | GET | All builder quality metrics |
+| `/api/v1/quality/team` | GET | Team-level quality dashboard data |
 | `/api/v1/analytics/team` | GET | Team performance data |
 | `/api/v1/analytics/trends` | GET | Score trend data |
 | `/api/v1/users` | GET | List users |
@@ -154,6 +248,12 @@ GOOGLE_VISION_API_KEY=your_google_vision_key
 NEXTAUTH_SECRET=your_random_secret
 NEXTAUTH_URL=http://localhost:3000
 ALLOWED_DOMAINS=squareup.com,block.xyz,bpofit.com
+
+# Email (feedback delivery)
+EMAIL_SERVICE=resend
+RESEND_API_KEY=your_resend_api_key
+FEEDBACK_CC_EMAIL=menugradingtoolresponses@squareup.com
+FEEDBACK_FROM_EMAIL=noreply@menugrading.squareup.com
 ```
 
 ## Testing Strategy
