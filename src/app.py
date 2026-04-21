@@ -12,7 +12,7 @@ from src.config import settings
 from src.utils.logging import setup_logging, get_logger
 from src.utils.errors import AppError
 
-from src.routers import reports, builders, graders, quality, feedback, ai
+from src.routers import reports, builders, graders, quality, feedback, ai, catalog, uploads
 
 setup_logging(debug=settings.DEBUG)
 log = get_logger("app")
@@ -61,6 +61,8 @@ app.include_router(graders.router, prefix="/api/v1")
 app.include_router(quality.router, prefix="/api/v1")
 app.include_router(feedback.router, prefix="/api/v1")
 app.include_router(ai.router, prefix="/api/v1")
+app.include_router(catalog.router, prefix="/api/v1")
+app.include_router(uploads.router, prefix="/api/v1")
 
 
 @app.get("/api/health")

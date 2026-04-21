@@ -501,6 +501,11 @@ AI_RULES: list[dict] = [
     },
 ]
 
+# ---------------------------------------------------------------------------
+# Menu Uploads (in-memory file store)
+# ---------------------------------------------------------------------------
+MENU_UPLOADS: dict[str, dict] = {}
+
 # Counter for generating unique IDs
 _counters = {
     "report": 5,

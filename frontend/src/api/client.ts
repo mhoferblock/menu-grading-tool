@@ -67,4 +67,42 @@ export const api = {
     insights: () => request<unknown>('/ai/insights'),
     rules: () => request<unknown>('/ai/rules'),
   },
+  catalog: {
+    fetch: async (merchantId: string, market: string) => {
+      const form = new FormData();
+      form.append('merchant_id', merchantId);
+      form.append('market', market);
+      const res = await fetch(`${BASE_URL}/catalog/fetch`, { method: 'POST', body: form });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || 'Catalog fetch failed');
+      }
+      const json = await res.json();
+      return json.data;
+    },
+    upload: async (file: File) => {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch(`${BASE_URL}/catalog/upload`, { method: 'POST', body: form });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || 'Catalog upload failed');
+      }
+      const json = await res.json();
+      return json.data;
+    },
+  },
+  uploads: {
+    menu: async (file: File) => {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch(`${BASE_URL}/uploads/menu`, { method: 'POST', body: form });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || 'Menu upload failed');
+      }
+      const json = await res.json();
+      return json.data;
+    },
+  },
 };
