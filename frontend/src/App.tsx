@@ -9,6 +9,7 @@ const Report = lazy(() => import('./pages/Report'));
 const Quality = lazy(() => import('./pages/Quality'));
 const AIInsights = lazy(() => import('./pages/AIInsights'));
 const History = lazy(() => import('./pages/History'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ export default function App() {
               <Route path="/quality" element={<Quality />} />
               <Route path="/ai" element={<AIInsights />} />
               <Route path="/history" element={<History />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
           </Routes>
         </Suspense>

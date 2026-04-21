@@ -45,6 +45,15 @@ def create_builder(body: BuilderCreateRequest):
     return {"data": builder, "meta": {}}
 
 
+@router.delete("/{builder_id}")
+def delete_builder(builder_id: str):
+    if builder_id not in BUILDERS:
+        raise NotFoundError("Builder", builder_id)
+
+    deleted = BUILDERS.pop(builder_id)
+    return {"data": deleted, "meta": {"deleted": True}}
+
+
 @router.get("/{builder_id}")
 def get_builder(builder_id: str):
     if builder_id not in BUILDERS:

@@ -2,6 +2,7 @@ import type {
   Builder,
   BuilderQualityMetrics,
   FeedbackPreview,
+  Grader,
   GraderQualityMetrics,
   GradingReport,
 } from '@/types';
@@ -32,9 +33,21 @@ export const api = {
       }),
   },
   builders: {
+    list: () => request<Builder[]>('/builders'),
     search: (q: string) => request<Builder[]>(`/builders?q=${q}`),
     get: (id: string) => request<Builder>(`/builders/${id}`),
     getTrend: (id: string) => request<unknown>(`/builders/${id}/trend`),
+    create: (data: { name: string; email: string; team?: string }) =>
+      request<Builder>('/builders', { method: 'POST', body: JSON.stringify(data) }),
+    delete: (id: string) =>
+      request<Builder>(`/builders/${id}`, { method: 'DELETE' }),
+  },
+  graders: {
+    list: () => request<Grader[]>('/graders'),
+    create: (data: { name: string; email: string; team?: string; role?: string }) =>
+      request<Grader>('/graders', { method: 'POST', body: JSON.stringify(data) }),
+    delete: (id: string) =>
+      request<Grader>(`/graders/${id}`, { method: 'DELETE' }),
   },
   quality: {
     graders: () => request<GraderQualityMetrics[]>('/quality/graders'),

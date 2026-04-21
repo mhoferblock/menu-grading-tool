@@ -13,6 +13,15 @@ class Builder(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
+class Grader(BaseModel):
+    id: str
+    name: str
+    email: str
+    team: Optional[str] = None
+    role: str = "grader"
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
 class SectionScore(BaseModel):
     score: float
     earned: float
@@ -134,6 +143,13 @@ class BuilderCreateRequest(BaseModel):
     name: str
     email: str
     team: Optional[str] = None
+
+
+class GraderCreateRequest(BaseModel):
+    name: str
+    email: str
+    team: Optional[str] = None
+    role: str = "grader"
 
 
 class AICorrectionRequest(BaseModel):

@@ -12,7 +12,7 @@ from src.config import settings
 from src.utils.logging import setup_logging, get_logger
 from src.utils.errors import AppError
 
-from src.routers import reports, builders, quality, feedback, ai
+from src.routers import reports, builders, graders, quality, feedback, ai
 
 setup_logging(debug=settings.DEBUG)
 log = get_logger("app")
@@ -57,6 +57,7 @@ async def app_error_handler(request: Request, exc: AppError):
 # --- Mount API routers under /api/v1/ ---
 app.include_router(reports.router, prefix="/api/v1")
 app.include_router(builders.router, prefix="/api/v1")
+app.include_router(graders.router, prefix="/api/v1")
 app.include_router(quality.router, prefix="/api/v1")
 app.include_router(feedback.router, prefix="/api/v1")
 app.include_router(ai.router, prefix="/api/v1")

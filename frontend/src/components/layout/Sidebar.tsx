@@ -6,6 +6,7 @@ import {
   BarChart3,
   Brain,
   Clock,
+  Settings,
   ClipboardList,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -17,6 +18,7 @@ const navItems = [
   { to: '/quality', label: 'Quality', icon: BarChart3 },
   { to: '/ai', label: 'AI Insights', icon: Brain },
   { to: '/history', label: 'History', icon: Clock },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ] as const;
 
 export default function Sidebar() {

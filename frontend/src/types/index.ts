@@ -6,6 +6,15 @@ export interface Builder {
   created_at: string;
 }
 
+export interface Grader {
+  id: string;
+  name: string;
+  email: string;
+  team: string | null;
+  role: string;
+  created_at: string;
+}
+
 export interface SectionScore {
   score: number;
   earned: number;

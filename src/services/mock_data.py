@@ -49,6 +49,60 @@ BUILDERS: dict[str, dict] = {
 }
 
 # ---------------------------------------------------------------------------
+# Graders
+# ---------------------------------------------------------------------------
+GRADERS: dict[str, dict] = {
+    "grader-001": {
+        "id": "grader-001",
+        "name": "Yuri Echeverria",
+        "email": "yecheverria-bpo@bpofit.com",
+        "team": "GT",
+        "role": "grader",
+        "created_at": (_now - timedelta(days=365)).isoformat(),
+    },
+    "grader-002": {
+        "id": "grader-002",
+        "name": "Sebastian Guzman",
+        "email": "sebastianguzman-bpo@bpofit.com",
+        "team": "GT",
+        "role": "grader",
+        "created_at": (_now - timedelta(days=300)).isoformat(),
+    },
+    "grader-003": {
+        "id": "grader-003",
+        "name": "Alyanna Cruz",
+        "email": "alyanna-bpo@bpofit.com",
+        "team": "MNL",
+        "role": "grader",
+        "created_at": (_now - timedelta(days=250)).isoformat(),
+    },
+    "grader-004": {
+        "id": "grader-004",
+        "name": "Randell Santos",
+        "email": "randell-bpo@bpofit.com",
+        "team": "MNL",
+        "role": "grader",
+        "created_at": (_now - timedelta(days=200)).isoformat(),
+    },
+    "grader-005": {
+        "id": "grader-005",
+        "name": "Mike Hofer",
+        "email": "mhofer@squareup.com",
+        "team": "GSO",
+        "role": "lead",
+        "created_at": (_now - timedelta(days=400)).isoformat(),
+    },
+    "grader-006": {
+        "id": "grader-006",
+        "name": "Leonel Reyes",
+        "email": "leonel-bpo@bpofit.com",
+        "team": "GT",
+        "role": "grader",
+        "created_at": (_now - timedelta(days=180)).isoformat(),
+    },
+}
+
+# ---------------------------------------------------------------------------
 # Grading Reports
 # ---------------------------------------------------------------------------
 REPORTS: dict[str, dict] = {
@@ -451,6 +505,7 @@ AI_RULES: list[dict] = [
 _counters = {
     "report": 5,
     "builder": 5,
+    "grader": 6,
     "snapshot": 5,
     "correction": 1,
 }
