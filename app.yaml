@@ -1,0 +1,10 @@
+command:
+  - python
+  - src/app.py
+env:
+  - name: ANTHROPIC_API_KEY
+    valueFrom: secret
+  - name: RESEND_API_KEY
+    valueFrom: secret
+  - name: SQUARE_ACCESS_TOKEN
+    valueFrom: secret
