@@ -119,7 +119,13 @@ export default function Report() {
         </div>
         <div className="flex gap-3">
           <button
-            onClick={() => window.print()}
+            onClick={async () => {
+              try {
+                await api.reports.downloadPdf(r.id, r.merchant_name);
+              } catch {
+                alert('Failed to generate PDF. Please try again.');
+              }
+            }}
             className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700"
           >
             <FileDown className="h-4 w-4" />

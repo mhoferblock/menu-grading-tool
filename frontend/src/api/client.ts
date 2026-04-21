@@ -31,6 +31,19 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(data),
       }),
+    downloadPdf: async (id: string, merchantName?: string) => {
+      const res = await fetch(`${BASE_URL}/reports/${id}/pdf`);
+      if (!res.ok) throw new Error('Failed to generate PDF');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `QA_Report_${(merchantName || 'report').replace(/\s+/g, '_')}_${id.slice(0, 8)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    },
   },
   builders: {
     list: () => request<Builder[]>('/builders'),

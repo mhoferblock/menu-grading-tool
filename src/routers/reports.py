@@ -7,8 +7,10 @@ from typing import Optional
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from fastapi import APIRouter, Query, Request
+from fastapi.responses import Response
 from src.services import store
 from src.services.grading_engine import compute_section_scores, compute_overall_score, collect_issues
+from src.services.pdf_report import generate_pdf
 from src.models.schemas import ReportCreateRequest, ReportUpdateRequest
 from src.utils.errors import NotFoundError
 
@@ -45,6 +47,21 @@ def get_report(report_id: str):
     if not report:
         raise NotFoundError("Report", report_id)
     return {"data": report, "meta": {}}
+
+
+@router.get("/{report_id}/pdf")
+def export_report_pdf(report_id: str):
+    report = store.get_report(report_id)
+    if not report:
+        raise NotFoundError("Report", report_id)
+    pdf_bytes = generate_pdf(report)
+    merchant = report.get("merchant_name", "report").replace(" ", "_")
+    filename = f"QA_Report_{merchant}_{report_id[:8]}.pdf"
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @router.post("", status_code=201)
