@@ -5,6 +5,7 @@ import AppShell from './components/layout/AppShell';
 import Dashboard from './pages/Dashboard';
 
 const Upload = lazy(() => import('./pages/Upload'));
+const ReportsList = lazy(() => import('./pages/ReportsList'));
 const Report = lazy(() => import('./pages/Report'));
 const Quality = lazy(() => import('./pages/Quality'));
 const AIInsights = lazy(() => import('./pages/AIInsights'));
@@ -30,7 +31,7 @@ export default function App() {
             <Route element={<AppShell />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/upload" element={<Upload />} />
-              <Route path="/reports" element={<Report />} />
+              <Route path="/reports" element={<ReportsList />} />
               <Route path="/reports/:id" element={<Report />} />
               <Route path="/quality" element={<Quality />} />
               <Route path="/ai" element={<AIInsights />} />

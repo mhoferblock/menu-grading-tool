@@ -1,50 +1,12 @@
-import { useState } from 'react';
-import { FileDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import { FileDown, ArrowLeft } from 'lucide-react';
 import ScoreRing from '@/components/ui/ScoreRing';
 import GradeBar from '@/components/ui/GradeBar';
 import StatCard from '@/components/ui/StatCard';
 import FeedbackPreview from '@/components/feedback/FeedbackPreview';
+import { api } from '@/api/client';
 import type { GradingReport, ItemGrade } from '@/types';
-
-const sampleReport: GradingReport = {
-  id: 'report-001',
-  merchant_name: 'Artisan Coffee House',
-  market: 'US',
-  graded_by: 'yecheverria-bpo@bpofit.com',
-  overall_score: 82,
-  section_scores: {
-    neatness: { score: 85, earned: 8.5, max_points: 10 },
-    organization: { score: 78, earned: 23.4, max_points: 30 },
-    accuracy: { score: 80, earned: 32, max_points: 40 },
-    thoroughness: { score: 90, earned: 18, max_points: 20 },
-  },
-  item_grades: [
-    { item_name: 'Espresso', category_name: 'Hot Drinks', overall_score: 95, neatness: 10, organization: 28, accuracy: 38, thoroughness: 19, issues: [] },
-    { item_name: 'Caramel Macchiato', category_name: 'Hot Drinks', overall_score: 88, neatness: 9, organization: 26, accuracy: 35, thoroughness: 18, issues: ['Price: menu $5.50 vs catalog $5.75'] },
-    { item_name: 'Iced Americano', category_name: 'Cold Drinks', overall_score: 72, neatness: 7, organization: 22, accuracy: 28, thoroughness: 15, issues: ['Missing modifier: Milk Choice', 'Not auto-add despite no variations'] },
-    { item_name: 'Avocado Toast', category_name: 'Food', overall_score: 90, neatness: 9, organization: 27, accuracy: 36, thoroughness: 18, issues: [] },
-    { item_name: 'caesar salad', category_name: 'Food', overall_score: 60, neatness: 6, organization: 18, accuracy: 24, thoroughness: 12, issues: ['Not Title Case', 'Missing nested dressing modifier', 'Duplicate without service distinction'] },
-    { item_name: 'Chocolate Chip Cookie', category_name: 'Bakery', overall_score: 92, neatness: 9, organization: 28, accuracy: 37, thoroughness: 18, issues: [] },
-    { item_name: 'Fresh Squeezed OJ', category_name: 'Cold Drinks', overall_score: 78, neatness: 8, organization: 23, accuracy: 30, thoroughness: 17, issues: ['Unit format: 16 oz should be 16oz', 'Modifier options not alphabetized'] },
-    { item_name: 'Bagel With Cream cheese', category_name: 'Bakery', overall_score: 68, neatness: 7, organization: 20, accuracy: 26, thoroughness: 15, issues: ['Inconsistent capitalization', 'Missing variation sizes'] },
-  ],
-  issues: {
-    price_discrepancies: 2,
-    capitalization_errors: 4,
-    modifier_issues: 3,
-    duplicates: 1,
-    missing_items: 1,
-    extra_items: 0,
-  },
-  builder_name: 'Carlos Zamora',
-  builder_email: 'czamora-bpo@bpofit.com',
-  builder_team: 'GT',
-  builder_id: 'bld-001',
-  feedback_status: 'pending',
-  feedback_sent_at: null,
-  feedback_notes: null,
-  created_at: '2026-04-21T10:30:00Z',
-};
 
 function scoreLabel(score: number) {
   if (score >= 90) return 'Excellent';
@@ -74,9 +36,64 @@ function scoreBadge(score: number) {
   return 'text-red-400';
 }
 
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function issueCount(issues: Record<string, unknown>): Record<string, number> {
+  const counts: Record<string, number> = {};
+  for (const [key, val] of Object.entries(issues)) {
+    if (Array.isArray(val)) counts[key] = val.length;
+    else if (typeof val === 'number') counts[key] = val;
+    else counts[key] = 0;
+  }
+  return counts;
+}
+
 export default function Report() {
+  const { id } = useParams<{ id: string }>();
+  const [report, setReport] = useState<GradingReport | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
-  const r = sampleReport;
+
+  useEffect(() => {
+    if (!id) {
+      setError('No report ID provided');
+      setLoading(false);
+      return;
+    }
+    api.reports
+      .get(id)
+      .then(setReport)
+      .catch((e) => setError(e instanceof Error ? e.message : 'Failed to load report'))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-blue-500" />
+      </div>
+    );
+  }
+
+  if (error || !report) {
+    return (
+      <div className="mx-auto max-w-6xl p-6">
+        <Link to="/reports" className="mb-4 inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-zinc-200">
+          <ArrowLeft className="h-4 w-4" /> Back to Reports
+        </Link>
+        <div className="flex flex-col items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 py-20 text-center">
+          <p className="text-sm text-red-400">{error || 'Report not found'}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const r = report;
+  const issues = issueCount(r.issues);
 
   if (showFeedback) {
     return <FeedbackPreview report={r} onClose={() => setShowFeedback(false)} />;
@@ -84,12 +101,17 @@ export default function Report() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
+      {/* Back link */}
+      <Link to="/reports" className="inline-flex items-center gap-1 text-sm text-zinc-400 hover:text-zinc-200">
+        <ArrowLeft className="h-4 w-4" /> Back to Reports
+      </Link>
+
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-100">QA Report: {r.merchant_name}</h1>
           <p className="mt-1 text-sm text-zinc-400">
-            Graded by {r.graded_by} on Apr 21, 2026 | Market: {r.market}
+            Graded by {r.graded_by} on {formatDate(r.created_at)} | Market: {r.market}
           </p>
           <p className="text-sm text-zinc-400">
             Built by {r.builder_name} ({r.builder_email}) | Team: {r.builder_team}
@@ -121,10 +143,18 @@ export default function Report() {
           </span>
         </div>
         <div className="space-y-3">
-          <GradeBar label="Neatness" score={r.section_scores.neatness.earned} max={r.section_scores.neatness.max_points} />
-          <GradeBar label="Organization" score={r.section_scores.organization.earned} max={r.section_scores.organization.max_points} />
-          <GradeBar label="Accuracy" score={r.section_scores.accuracy.earned} max={r.section_scores.accuracy.max_points} />
-          <GradeBar label="Thoroughness" score={r.section_scores.thoroughness.earned} max={r.section_scores.thoroughness.max_points} />
+          {r.section_scores.neatness && (
+            <GradeBar label="Neatness" score={r.section_scores.neatness.earned} max={r.section_scores.neatness.max_points} />
+          )}
+          {r.section_scores.organization && (
+            <GradeBar label="Organization" score={r.section_scores.organization.earned} max={r.section_scores.organization.max_points} />
+          )}
+          {r.section_scores.accuracy && (
+            <GradeBar label="Accuracy" score={r.section_scores.accuracy.earned} max={r.section_scores.accuracy.max_points} />
+          )}
+          {r.section_scores.thoroughness && (
+            <GradeBar label="Thoroughness" score={r.section_scores.thoroughness.earned} max={r.section_scores.thoroughness.max_points} />
+          )}
         </div>
       </div>
 
@@ -132,73 +162,79 @@ export default function Report() {
 
       {/* Issue Stats */}
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard value={r.issues.price_discrepancies} label="Price Mismatches" tone="danger" />
-        <StatCard value={r.issues.capitalization_errors} label="Capitalization Errors" tone="warning" />
-        <StatCard value={r.issues.modifier_issues} label="Modifier Issues" tone="warning" />
-        <StatCard value={r.issues.duplicates} label="Duplicates" tone="info" />
-        <StatCard value={r.issues.missing_items} label="Missing Items" tone="danger" />
-        <StatCard value={r.issues.extra_items} label="Extra Items" tone="success" />
+        <StatCard value={issues.price_discrepancies ?? 0} label="Price Mismatches" tone="danger" />
+        <StatCard value={issues.capitalization_errors ?? 0} label="Capitalization Errors" tone="warning" />
+        <StatCard value={issues.modifier_issues ?? 0} label="Modifier Issues" tone="warning" />
+        <StatCard value={issues.duplicates ?? 0} label="Duplicates" tone="info" />
+        <StatCard value={issues.missing_items ?? 0} label="Missing Items" tone="danger" />
+        <StatCard value={issues.extra_items ?? 0} label="Extra Items" tone="success" />
       </div>
 
       <hr className="border-zinc-800" />
 
       {/* Per-Item Grades Table */}
-      <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="sticky top-0 z-10">
-              <tr className="bg-zinc-800/50">
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Item</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Category</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Score</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Neatness">N</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Organization">O</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Accuracy">A</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Thoroughness">T</th>
-                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Issues</th>
-              </tr>
-            </thead>
-            <tbody>
-              {r.item_grades.map((item: ItemGrade, idx: number) => (
-                <tr
-                  key={item.item_name}
-                  className={`${rowTone(item.overall_score)} ${idx % 2 === 1 ? 'bg-zinc-900/50' : ''}`}
-                >
-                  <td className="border-t border-zinc-800/50 px-4 py-3 text-sm font-medium text-zinc-200">
-                    {item.item_name}
-                  </td>
-                  <td className="border-t border-zinc-800/50 px-4 py-3 text-sm text-zinc-400">
-                    {item.category_name}
-                  </td>
-                  <td className={`border-t border-zinc-800/50 px-4 py-3 text-sm font-semibold tabular-nums ${scoreBadge(item.overall_score)}`}>
-                    {item.overall_score}%
-                  </td>
-                  <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.neatness}</td>
-                  <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.organization}</td>
-                  <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.accuracy}</td>
-                  <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.thoroughness}</td>
-                  <td className="border-t border-zinc-800/50 px-4 py-3 text-sm text-zinc-400">
-                    {item.issues.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {item.issues.map((issue, i) => (
-                          <span
-                            key={i}
-                            className="rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400"
-                          >
-                            {issue}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-zinc-600">—</span>
-                    )}
-                  </td>
+      {r.item_grades.length > 0 ? (
+        <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-zinc-800/50">
+                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Item</th>
+                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Category</th>
+                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Score</th>
+                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Neatness">N</th>
+                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Organization">O</th>
+                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Accuracy">A</th>
+                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400" title="Thoroughness">T</th>
+                  <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-zinc-400">Issues</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {r.item_grades.map((item: ItemGrade, idx: number) => (
+                  <tr
+                    key={item.item_name}
+                    className={`${rowTone(item.overall_score)} ${idx % 2 === 1 ? 'bg-zinc-900/50' : ''}`}
+                  >
+                    <td className="border-t border-zinc-800/50 px-4 py-3 text-sm font-medium text-zinc-200">
+                      {item.item_name}
+                    </td>
+                    <td className="border-t border-zinc-800/50 px-4 py-3 text-sm text-zinc-400">
+                      {item.category_name}
+                    </td>
+                    <td className={`border-t border-zinc-800/50 px-4 py-3 text-sm font-semibold tabular-nums ${scoreBadge(item.overall_score)}`}>
+                      {item.overall_score}%
+                    </td>
+                    <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.neatness}</td>
+                    <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.organization}</td>
+                    <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.accuracy}</td>
+                    <td className="border-t border-zinc-800/50 px-4 py-3 text-sm tabular-nums text-zinc-400">{item.thoroughness}</td>
+                    <td className="border-t border-zinc-800/50 px-4 py-3 text-sm text-zinc-400">
+                      {item.issues.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {item.issues.map((issue, i) => (
+                            <span
+                              key={i}
+                              className="rounded bg-zinc-800 px-1.5 py-0.5 text-xs text-zinc-400"
+                            >
+                              {issue}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-zinc-600">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="rounded-lg border border-zinc-800 bg-zinc-900 py-12 text-center">
+          <p className="text-sm text-zinc-500">No per-item grades recorded for this report.</p>
+        </div>
+      )}
     </div>
   );
 }
