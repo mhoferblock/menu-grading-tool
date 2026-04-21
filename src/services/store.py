@@ -28,7 +28,7 @@ def init_tables():
             name STRING NOT NULL,
             email STRING NOT NULL,
             team STRING,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+            created_at STRING
         ) USING DELTA
     """)
 
@@ -38,8 +38,8 @@ def init_tables():
             name STRING NOT NULL,
             email STRING NOT NULL,
             team STRING,
-            role STRING DEFAULT 'grader',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+            role STRING,
+            created_at STRING
         ) USING DELTA
     """)
 
@@ -57,10 +57,10 @@ def init_tables():
             builder_email STRING,
             builder_team STRING,
             builder_id STRING,
-            feedback_status STRING DEFAULT 'draft',
-            feedback_sent_at TIMESTAMP,
+            feedback_status STRING,
+            feedback_sent_at STRING,
             feedback_notes STRING,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+            created_at STRING
         ) USING DELTA
     """)
 
@@ -75,7 +75,7 @@ def init_tables():
             issue_count INT,
             issue_summary STRING,
             grade_time_ms INT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP()
+            created_at STRING
         ) USING DELTA
     """)
 

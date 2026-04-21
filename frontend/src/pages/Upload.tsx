@@ -412,10 +412,10 @@ export default function Upload() {
                   item_name: item.name,
                   category_name: item.category || 'Uncategorized',
                   overall_score: 80,
-                  neatness: 8,
-                  organization: 24,
-                  accuracy: 32,
-                  thoroughness: 16,
+                  neatness: 80,
+                  organization: 80,
+                  accuracy: 80,
+                  thoroughness: 80,
                   issues: [],
                 }));
                 const report = await api.reports.create({
