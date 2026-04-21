@@ -6,6 +6,9 @@ from typing import List
 
 class Settings:
     ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+    AI_MODEL: str = os.getenv("AI_MODEL", "claude-sonnet-4-20250514")
+    AI_PASSES: int = int(os.getenv("AI_PASSES", "3"))
+    AI_MULTIPASS: bool = os.getenv("AI_MULTIPASS", "true").lower() == "true"
     RESEND_API_KEY: str = os.getenv("RESEND_API_KEY", "")
     SQUARE_ACCESS_TOKEN: str = os.getenv("SQUARE_ACCESS_TOKEN", "")
     DATABRICKS_WAREHOUSE_ID: str = os.getenv("DATABRICKS_WAREHOUSE_ID", "a53b3ef899f7696a")

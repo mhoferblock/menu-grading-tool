@@ -13,7 +13,8 @@ from pydantic import BaseModel, Field
 from src.services import store
 from src.services.mock_data import MENU_UPLOADS
 from src.services.grading_engine import compute_section_scores, compute_overall_score, collect_issues
-from src.services.ai_grader import grade_menu
+from src.services.ai_grader import grade_menu, grade_menu_multipass
+from src.config import settings
 from src.utils.logging import get_logger
 
 log = get_logger("ai_router")
@@ -48,13 +49,24 @@ async def ai_grade_menu(body: GradeRequest, request: Request):
     grader_email = getattr(request.state, "user_email", "unknown@squareup.com")
 
     try:
-        result = await grade_menu(
-            menu_bytes=menu_bytes,
-            file_type=file_type,
-            catalog_items=body.catalog_items,
-            market=body.market,
-            special_requests=body.special_requests,
-        )
+        if settings.AI_MULTIPASS:
+            log.info("using_multipass", passes=settings.AI_PASSES)
+            result = await grade_menu_multipass(
+                menu_bytes=menu_bytes,
+                file_type=file_type,
+                catalog_items=body.catalog_items,
+                market=body.market,
+                special_requests=body.special_requests,
+            )
+        else:
+            log.info("using_single_pass")
+            result = await grade_menu(
+                menu_bytes=menu_bytes,
+                file_type=file_type,
+                catalog_items=body.catalog_items,
+                market=body.market,
+                special_requests=body.special_requests,
+            )
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

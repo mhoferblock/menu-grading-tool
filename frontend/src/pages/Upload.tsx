@@ -7,9 +7,55 @@ import {
   Loader2,
   X,
   AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
 import { api } from '@/api/client';
 import type { Builder, Grader } from '@/types';
+
+const GRADING_PHASES = [
+  { label: 'Analyzing neatness', detail: 'Checking capitalization, spelling, formatting (3 passes)' },
+  { label: 'Checking organization', detail: 'Validating variations, modifiers, categories (3 passes)' },
+  { label: 'Verifying accuracy', detail: 'Matching prices, checking auto-add rules, finding duplicates (3 passes)' },
+  { label: 'Evaluating thoroughness', detail: 'Assessing completeness, special requests, missing items (3 passes)' },
+  { label: 'Merging results', detail: 'Computing median scores, deduplicating issues, assigning confidence' },
+  { label: 'Finalizing report', detail: 'Creating grading report with multipass consensus' },
+];
+
+function GradingProgress({ phase }: { phase: number }) {
+  return (
+    <div className="rounded-lg border border-zinc-800 bg-zinc-900/80 p-4 space-y-2.5">
+      <div className="flex items-center gap-2 mb-3">
+        <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
+        <span className="text-xs font-medium text-blue-400">
+          4 agents x 3 passes = 12 parallel analyses
+        </span>
+      </div>
+      {GRADING_PHASES.map((p, i) => {
+        const isDone = i < phase;
+        const isActive = i === phase;
+        return (
+          <div key={i} className="flex items-start gap-2.5">
+            {isDone ? (
+              <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
+            ) : isActive ? (
+              <Loader2 className="mt-0.5 h-3.5 w-3.5 shrink-0 animate-spin text-blue-400" />
+            ) : (
+              <div className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded-full border border-zinc-700" />
+            )}
+            <div>
+              <p className={`text-xs font-medium ${isDone ? 'text-emerald-400' : isActive ? 'text-zinc-200' : 'text-zinc-600'}`}>
+                {p.label}
+              </p>
+              {isActive && (
+                <p className="text-[10px] text-zinc-500 mt-0.5">{p.detail}</p>
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 interface UploadResult {
   id: string;
@@ -50,6 +96,7 @@ export default function Upload() {
   const [specialRequests, setSpecialRequests] = useState('');
   const [grading, setGrading] = useState(false);
   const [gradingError, setGradingError] = useState('');
+  const [gradingPhase, setGradingPhase] = useState(0);
 
   useEffect(() => {
     api.builders.list().then(setBuilders);
@@ -409,11 +456,18 @@ export default function Upload() {
               <span>{gradingError}</span>
             </div>
           )}
+          {grading && (
+            <GradingProgress phase={gradingPhase} />
+          )}
           <button
             onClick={async () => {
               if (!selectedBuilder || !merchantName.trim() || !menuResult) return;
               setGrading(true);
               setGradingError('');
+              setGradingPhase(0);
+              const phaseTimer = setInterval(() => {
+                setGradingPhase((p) => Math.min(p + 1, 5));
+              }, 5000);
               try {
                 const report = await api.ai.grade({
                   upload_id: menuResult.id,
@@ -426,11 +480,14 @@ export default function Upload() {
                   builder_id: selectedBuilder.id,
                   special_requests: specialRequests,
                 });
+                clearInterval(phaseTimer);
                 navigate(`/reports/${report.id}`);
               } catch (e: unknown) {
+                clearInterval(phaseTimer);
                 setGradingError(e instanceof Error ? e.message : 'Failed to grade menu');
               } finally {
                 setGrading(false);
+                setGradingPhase(0);
               }
             }}
             disabled={!selectedBuilderId || !merchantName.trim() || !menuResult || grading}
@@ -438,16 +495,16 @@ export default function Upload() {
           >
             {grading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Claude is grading the menu...
+                <Loader2 className="h-4 w-4 animate-spin" /> Running multipass analysis...
               </>
             ) : (
               'Start AI Grading'
             )}
           </button>
-          {!menuResult && (
+          {!grading && !menuResult && (
             <p className="text-center text-xs text-zinc-500">Upload a menu file to start grading</p>
           )}
-          {menuResult && (!merchantName.trim() || !selectedBuilderId) && (
+          {!grading && menuResult && (!merchantName.trim() || !selectedBuilderId) && (
             <p className="text-center text-xs text-zinc-500">
               {!merchantName.trim() ? 'Enter a merchant name' : 'Select a builder'} to continue
             </p>
