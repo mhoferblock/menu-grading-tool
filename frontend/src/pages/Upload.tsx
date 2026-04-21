@@ -29,6 +29,8 @@ interface CatalogResult {
 export default function Upload() {
   const navigate = useNavigate();
 
+  const [merchantName, setMerchantName] = useState('');
+  const [market, setMarket] = useState('US');
   const [catalogFile, setCatalogFile] = useState<File | null>(null);
 
   const [menuFile, setMenuFile] = useState<File | null>(null);
@@ -44,6 +46,9 @@ export default function Upload() {
   const [graders, setGraders] = useState<Grader[]>([]);
   const [selectedBuilderId, setSelectedBuilderId] = useState('');
   const [selectedGraderId, setSelectedGraderId] = useState('');
+
+  const [grading, setGrading] = useState(false);
+  const [gradingError, setGradingError] = useState('');
 
   useEffect(() => {
     api.builders.list().then(setBuilders);
@@ -262,20 +267,51 @@ export default function Upload() {
         </div>
       </div>
 
-      {/* Builder & Grader Selection */}
+      {/* Merchant Info + Builder + Grader */}
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Builder */}
+        {/* Merchant Info */}
         <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
           <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-3">
-            <h2 className="text-sm font-semibold text-zinc-100">Builder</h2>
+            <h2 className="text-sm font-semibold text-zinc-100">Merchant Info</h2>
             <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400">
               Step 3
             </span>
           </div>
           <div className="space-y-3 p-5">
-            <p className="text-sm text-zinc-400">
-              Who built this menu? Feedback will be emailed to them after grading.
-            </p>
+            <input
+              type="text"
+              placeholder="Merchant / Restaurant Name..."
+              value={merchantName}
+              onChange={(e) => setMerchantName(e.target.value)}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
+            />
+            <div className="flex gap-2">
+              {(['US', 'EU', 'AU'] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMarket(m)}
+                  className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                    market === m
+                      ? 'border-emerald-500/30 bg-emerald-500/20 text-emerald-400'
+                      : 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600'
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Builder */}
+        <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+          <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-3">
+            <h2 className="text-sm font-semibold text-zinc-100">Builder</h2>
+            <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400">
+              Step 4
+            </span>
+          </div>
+          <div className="space-y-3 p-5">
             <div className="relative">
               <select
                 value={selectedBuilderId}
@@ -309,19 +345,18 @@ export default function Upload() {
             )}
           </div>
         </div>
+      </div>
 
-        {/* Grader */}
+      {/* Grader + Start Grading */}
+      <div className="grid gap-6 md:grid-cols-2">
         <div className="overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
           <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-3">
             <h2 className="text-sm font-semibold text-zinc-100">Graded By</h2>
             <span className="rounded-full bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-400">
-              Step 4
+              Step 5
             </span>
           </div>
           <div className="space-y-3 p-5">
-            <p className="text-sm text-zinc-400">
-              Who is grading this menu?
-            </p>
             <div className="relative">
               <select
                 value={selectedGraderId}
@@ -357,17 +392,66 @@ export default function Upload() {
             )}
           </div>
         </div>
-      </div>
 
-      {/* Start Grading */}
-      <div className="flex justify-end">
-        <button
-          onClick={() => navigate('/reports')}
-          disabled={!selectedBuilderId}
-          className="rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Start Grading
-        </button>
+        {/* Start Grading Action */}
+        <div className="flex flex-col justify-end gap-3">
+          {gradingError && (
+            <div className="flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/5 px-3 py-2 text-xs text-red-400">
+              <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+              <span>{gradingError}</span>
+            </div>
+          )}
+          <button
+            onClick={async () => {
+              if (!selectedBuilder || !merchantName.trim()) return;
+              setGrading(true);
+              setGradingError('');
+              try {
+                const items = catalogResult?.items ?? [];
+                const itemGrades = items.map((item) => ({
+                  item_name: item.name,
+                  category_name: item.category || 'Uncategorized',
+                  overall_score: 80,
+                  neatness: 8,
+                  organization: 24,
+                  accuracy: 32,
+                  thoroughness: 16,
+                  issues: [],
+                }));
+                const report = await api.reports.create({
+                  merchant_name: merchantName.trim(),
+                  market,
+                  builder_name: selectedBuilder.name,
+                  builder_email: selectedBuilder.email,
+                  builder_team: selectedBuilder.team || '',
+                  builder_id: selectedBuilder.id,
+                  item_grades: itemGrades,
+                  feedback_notes: '',
+                });
+                navigate(`/reports/${report.id}`);
+              } catch (e: unknown) {
+                setGradingError(e instanceof Error ? e.message : 'Failed to create report');
+              } finally {
+                setGrading(false);
+              }
+            }}
+            disabled={!selectedBuilderId || !merchantName.trim() || grading}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {grading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" /> Creating Report...
+              </>
+            ) : (
+              'Start Grading'
+            )}
+          </button>
+          {(!merchantName.trim() || !selectedBuilderId) && (
+            <p className="text-center text-xs text-zinc-500">
+              {!merchantName.trim() ? 'Enter a merchant name' : 'Select a builder'} to continue
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
