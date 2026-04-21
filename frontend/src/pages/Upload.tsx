@@ -11,6 +11,7 @@ export default function Upload() {
   const [catalogSource, setCatalogSource] = useState('square');
   const [merchantId, setMerchantId] = useState('');
   const [activeMarket, setActiveMarket] = useState<string>('US');
+  const [catalogFile, setCatalogFile] = useState<File | null>(null);
 
   const [builders, setBuilders] = useState<Builder[]>([]);
   const [graders, setGraders] = useState<Grader[]>([]);
@@ -75,36 +76,77 @@ export default function Upload() {
               <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
             </div>
 
-            <input
-              type="text"
-              placeholder="Square Merchant ID..."
-              value={merchantId}
-              onChange={(e) => setMerchantId(e.target.value)}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
-            />
+            {catalogSource === 'square' ? (
+              <>
+                <input
+                  type="text"
+                  placeholder="Square Merchant ID..."
+                  value={merchantId}
+                  onChange={(e) => setMerchantId(e.target.value)}
+                  className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
+                />
 
-            <div className="flex gap-2">
-              {markets.map((m) => (
+                <div className="flex gap-2">
+                  {markets.map((m) => (
+                    <button
+                      key={m}
+                      onClick={() => setActiveMarket(m)}
+                      className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                        activeMarket === m
+                          ? 'border-emerald-500/30 bg-emerald-500/20 text-emerald-400'
+                          : 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600'
+                      }`}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+
                 <button
-                  key={m}
-                  onClick={() => setActiveMarket(m)}
-                  className={`rounded-full border px-3 py-1 text-sm transition-colors ${
-                    activeMarket === m
-                      ? 'border-emerald-500/30 bg-emerald-500/20 text-emerald-400'
-                      : 'border-zinc-700 bg-zinc-800 text-zinc-400 hover:border-zinc-600'
-                  }`}
+                  onClick={() => alert('Catalog fetch will connect to Square API once configured. Enter a Merchant ID above.')}
+                  className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
                 >
-                  {m}
+                  Fetch Catalog
                 </button>
-              ))}
-            </div>
-
-            <button
-              onClick={() => alert('Catalog fetch will connect to Square API once configured. Enter a Merchant ID above.')}
-              className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500"
-            >
-              Fetch Catalog
-            </button>
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-zinc-700 py-10 text-center hover:border-zinc-600">
+                <UploadIcon className="mb-3 h-8 w-8 text-zinc-500" />
+                {catalogFile ? (
+                  <>
+                    <p className="text-sm font-medium text-emerald-400">{catalogFile.name}</p>
+                    <p className="mt-1 text-xs text-zinc-500">
+                      {(catalogFile.size / 1024).toFixed(1)} KB
+                    </p>
+                    <button
+                      onClick={() => setCatalogFile(null)}
+                      className="mt-3 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-1.5 text-xs text-zinc-400 hover:bg-zinc-700"
+                    >
+                      Remove
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-zinc-300">Upload catalog Excel export</p>
+                    <label className="mt-3 cursor-pointer rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-300 hover:bg-zinc-700">
+                      Browse Files
+                      <input
+                        type="file"
+                        accept=".xlsx,.xls,.csv"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) setCatalogFile(file);
+                        }}
+                      />
+                    </label>
+                    <p className="mt-2 text-xs text-zinc-500">
+                      Supports .xlsx, .xls, .csv
+                    </p>
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
