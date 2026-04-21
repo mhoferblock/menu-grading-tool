@@ -7,7 +7,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from fastapi import APIRouter
-from src.services.mock_data import REPORTS
+from src.services import store
 from src.services.feedback_compiler import compile_feedback, generate_email_html
 from src.models.schemas import FeedbackSendRequest
 from src.utils.errors import NotFoundError, AppError
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/reports", tags=["feedback"])
 
 @router.get("/{report_id}/feedback")
 def preview_feedback(report_id: str):
-    report = REPORTS.get(report_id)
+    report = store.get_report(report_id)
     if not report:
         raise NotFoundError("Report", report_id)
 
@@ -27,7 +27,7 @@ def preview_feedback(report_id: str):
 
 @router.post("/{report_id}/feedback")
 def send_feedback(report_id: str, body: FeedbackSendRequest):
-    report = REPORTS.get(report_id)
+    report = store.get_report(report_id)
     if not report:
         raise NotFoundError("Report", report_id)
 
@@ -37,11 +37,10 @@ def send_feedback(report_id: str, body: FeedbackSendRequest):
     preview = compile_feedback(report)
     html = generate_email_html(preview, personal_notes=body.personal_notes)
 
-    # In production, send via Resend API here.
-    # For now, mark as sent and return the preview.
-
-    report["feedback_status"] = "sent"
-    report["feedback_sent_at"] = datetime.utcnow().isoformat()
+    store.update_report(report_id, {
+        "feedback_status": "sent",
+        "feedback_sent_at": datetime.utcnow().isoformat(),
+    })
 
     return {
         "data": {

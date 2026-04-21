@@ -13,6 +13,8 @@ from src.utils.logging import setup_logging, get_logger
 from src.utils.errors import AppError
 
 from src.routers import reports, builders, graders, quality, feedback, ai, catalog, uploads
+from src.services.store import init_tables, seed_if_empty
+from src.services.db import is_available as db_is_available
 
 setup_logging(debug=settings.DEBUG)
 log = get_logger("app")
@@ -65,9 +67,20 @@ app.include_router(catalog.router, prefix="/api/v1")
 app.include_router(uploads.router, prefix="/api/v1")
 
 
+@app.on_event("startup")
+async def startup():
+    if db_is_available():
+        log.info("initializing_database")
+        init_tables()
+        seed_if_empty()
+        log.info("database_ready")
+    else:
+        log.warning("database_unavailable", msg="Running without persistence — data will not survive restarts")
+
+
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "version": "1.0.0", "env": settings.ENV}
+    return {"status": "ok", "version": "1.0.0", "env": settings.ENV, "db": db_is_available()}
 
 
 # --- Serve static frontend files ---

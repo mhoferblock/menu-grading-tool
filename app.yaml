@@ -6,3 +6,9 @@ env:
     value: production
   - name: DEBUG
     value: "false"
+  - name: DATABRICKS_WAREHOUSE_ID
+    value: a53b3ef899f7696a
+  - name: DATABRICKS_CATALOG
+    value: sandbox
+  - name: DATABRICKS_SCHEMA
+    value: menu_grading
