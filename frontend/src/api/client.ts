@@ -66,6 +66,21 @@ export const api = {
   ai: {
     insights: () => request<unknown>('/ai/insights'),
     rules: () => request<unknown>('/ai/rules'),
+    grade: (data: {
+      upload_id: string;
+      catalog_items: { name: string; price?: number; category?: string; description?: string }[];
+      market: string;
+      merchant_name: string;
+      builder_name: string;
+      builder_email: string;
+      builder_team: string;
+      builder_id: string;
+      special_requests?: string;
+    }) =>
+      request<GradingReport>('/ai/grade', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   },
   catalog: {
     fetch: async (merchantId: string, market: string) => {

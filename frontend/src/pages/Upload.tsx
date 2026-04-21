@@ -47,6 +47,7 @@ export default function Upload() {
   const [selectedBuilderId, setSelectedBuilderId] = useState('');
   const [selectedGraderId, setSelectedGraderId] = useState('');
 
+  const [specialRequests, setSpecialRequests] = useState('');
   const [grading, setGrading] = useState(false);
   const [gradingError, setGradingError] = useState('');
 
@@ -300,6 +301,13 @@ export default function Upload() {
                 </button>
               ))}
             </div>
+            <textarea
+              placeholder="Special requests (e.g., AU market formatting, specific modifiers expected, ignore certain items...)"
+              value={specialRequests}
+              onChange={(e) => setSpecialRequests(e.target.value)}
+              rows={2}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200 placeholder-zinc-500 focus:border-blue-500 focus:outline-none"
+            />
           </div>
         </div>
 
@@ -403,50 +411,43 @@ export default function Upload() {
           )}
           <button
             onClick={async () => {
-              if (!selectedBuilder || !merchantName.trim()) return;
+              if (!selectedBuilder || !merchantName.trim() || !menuResult) return;
               setGrading(true);
               setGradingError('');
               try {
-                const items = catalogResult?.items ?? [];
-                const itemGrades = items.map((item) => ({
-                  item_name: item.name,
-                  category_name: item.category || 'Uncategorized',
-                  overall_score: 80,
-                  neatness: 80,
-                  organization: 80,
-                  accuracy: 80,
-                  thoroughness: 80,
-                  issues: [],
-                }));
-                const report = await api.reports.create({
-                  merchant_name: merchantName.trim(),
+                const report = await api.ai.grade({
+                  upload_id: menuResult.id,
+                  catalog_items: catalogResult?.items ?? [],
                   market,
+                  merchant_name: merchantName.trim(),
                   builder_name: selectedBuilder.name,
                   builder_email: selectedBuilder.email,
                   builder_team: selectedBuilder.team || '',
                   builder_id: selectedBuilder.id,
-                  item_grades: itemGrades,
-                  feedback_notes: '',
+                  special_requests: specialRequests,
                 });
                 navigate(`/reports/${report.id}`);
               } catch (e: unknown) {
-                setGradingError(e instanceof Error ? e.message : 'Failed to create report');
+                setGradingError(e instanceof Error ? e.message : 'Failed to grade menu');
               } finally {
                 setGrading(false);
               }
             }}
-            disabled={!selectedBuilderId || !merchantName.trim() || grading}
+            disabled={!selectedBuilderId || !merchantName.trim() || !menuResult || grading}
             className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {grading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Creating Report...
+                <Loader2 className="h-4 w-4 animate-spin" /> Claude is grading the menu...
               </>
             ) : (
-              'Start Grading'
+              'Start AI Grading'
             )}
           </button>
-          {(!merchantName.trim() || !selectedBuilderId) && (
+          {!menuResult && (
+            <p className="text-center text-xs text-zinc-500">Upload a menu file to start grading</p>
+          )}
+          {menuResult && (!merchantName.trim() || !selectedBuilderId) && (
             <p className="text-center text-xs text-zinc-500">
               {!merchantName.trim() ? 'Enter a merchant name' : 'Select a builder'} to continue
             </p>

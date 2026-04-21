@@ -6,10 +6,10 @@ from typing import Optional, List, Dict
 
 # Rubric weights (max points per section, total = 100)
 RUBRIC = {
-    "neatness": 20.0,
-    "organization": 25.0,
-    "accuracy": 30.0,
-    "thoroughness": 25.0,
+    "neatness": 10.0,
+    "organization": 30.0,
+    "accuracy": 40.0,
+    "thoroughness": 20.0,
 }
 
 TITLE_CASE_EXCEPTIONS = {
