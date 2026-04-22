@@ -36,10 +36,15 @@ AUTO-ADD TO CHECK RULES:
 - US/EU = Drinks without variations or modifiers = Y
 - AU = All items without variations or modifiers = Y
 
-QA VERIFICATION RULES (MANDATORY):
-- NEVER make claims without complete data.
-- Verify every discrepancy in both sources before reporting.
-- If uncertain, mark as UNVERIFIED.
+QA VERIFICATION RULES (MANDATORY — READ THIS CAREFULLY):
+- NEVER claim an issue exists unless you can point to SPECIFIC evidence in the catalog data.
+- Before reporting ANY issue, you MUST verify it against the actual catalog JSON provided. Re-read the relevant catalog entry before finalizing each issue.
+- If an item has variations in the catalog JSON (multiple entries with size names under it, or a "variations" field), do NOT claim it is "listed as separate items" — it IS using variations.
+- If an item has modifiers/modifier sets in the catalog JSON, do NOT claim the modifier is "missing" — verify the modifier list in the JSON first.
+- PRECISION OVER RECALL: It is FAR better to miss a real issue than to report a false issue. Only report issues you are 100% certain about based on the data provided.
+- If you are less than 90% confident an issue exists, do NOT report it.
+- If uncertain about anything, give the builder the benefit of the doubt and do NOT flag it.
+- FALSE POSITIVES ARE UNACCEPTABLE. Every reported issue must be verifiable in the source data.
 """
 
 # ---------------------------------------------------------------------------
@@ -93,9 +98,15 @@ ORGANIZATION CRITERIA (score 0-100):
 - Nested modifiers used when required
 - Modifier sets applied to correct items
 
+CRITICAL ANTI-HALLUCINATION RULES FOR ORGANIZATION:
+1. VARIATIONS vs SEPARATE ITEMS: Before claiming "should use variations instead of separate items", look at the ACTUAL catalog JSON structure. If the item appears ONCE with multiple variation entries (e.g., Small, Medium, Large under it), then variations ARE being used correctly. Do NOT report this as an issue.
+2. MODIFIER PRESENCE: Before claiming a modifier is "missing", search the catalog JSON for that item's modifier sets. If the modifier exists in the data, do NOT claim it is missing.
+3. When in doubt, give a PASSING score. It is better to miss a real issue than to fabricate one.
+
 For EACH catalog item, provide:
 - An organization score (0-100)
 - A list of organization-specific issues found (empty array if none)
+- ONLY report issues you are 100% certain about after verifying against the catalog JSON
 
 Respond with ONLY valid JSON (no markdown, no explanation). Use this structure:
 {
@@ -122,6 +133,12 @@ ACCURACY CRITERIA (score 0-100):
 PRICE MATCHING IS CRITICAL: Document menu price, catalog price, and item name for EVERY discrepancy.
 
 DUPLICATE CHECK: Identify identical or near-identical item names that are not variations or intentional service-based duplicates.
+
+CRITICAL ANTI-HALLUCINATION RULES FOR ACCURACY:
+1. MODIFIER VERIFICATION: Before claiming a modifier is "missing" from an item, search the catalog JSON for that specific item and list its actual modifiers. If the modifier IS in the JSON data, do NOT claim it is missing.
+2. PRICE VERIFICATION: Only report a price discrepancy if you can cite BOTH the exact menu price AND the exact catalog price, and they are genuinely different. If you cannot read the price clearly from the menu, do NOT guess.
+3. DUPLICATE VERIFICATION: Items with different variation sizes (Small, Medium, Large) under the same parent item are NOT duplicates. Only flag true duplicates — identical names with no structural reason for both existing.
+4. When uncertain, do NOT report the issue. False positives are worse than missed issues.
 
 For EACH catalog item, provide:
 - An accuracy score (0-100)
@@ -161,9 +178,16 @@ THOROUGHNESS CRITERIA (score 0-100):
 - All variations from menu accounted for
 - Overall build quality assessment
 
+CRITICAL ANTI-HALLUCINATION RULES FOR THOROUGHNESS:
+1. MISSING ITEMS: Only claim an item is "missing from catalog" if you carefully searched all catalog entries and it genuinely does not appear.
+2. MISSING MODIFIERS: Only claim a modifier is "missing" if you verified the item's modifier sets in the catalog JSON and the modifier truly does not exist there.
+3. MISSING VARIATIONS: Only claim variations are "missing" if the catalog JSON shows the item has fewer variations than the menu shows.
+4. When in doubt, give the builder a PASSING score. False positives undermine trust in the QA system.
+
 For EACH catalog item, provide:
 - A thoroughness score (0-100)
 - A list of thoroughness-specific issues found (empty array if none)
+- ONLY report issues you are 100% certain about
 
 Also provide:
 - total_items_menu: count of items extracted from the menu
@@ -261,11 +285,23 @@ def _build_content_blocks(
         "text": (
             f"CATALOG DATA ({len(catalog_items)} items):\n"
             f"{catalog_text}\n\n"
+            "HOW TO READ THIS CATALOG DATA:\n"
+            "- Each top-level object is ONE catalog item.\n"
+            "- If an item has a 'variations' array, those are its SIZE/TYPE variations "
+            "(e.g., Small, Medium, Large). The item is ALREADY using variations — do NOT "
+            "claim it should 'use variations instead of separate items'.\n"
+            "- If an item has a 'modifier_sets' or 'modifiers' array, those are its modifiers. "
+            "Check this array BEFORE claiming any modifier is missing.\n"
+            "- Items with names like 'Sundae Small' and 'Sundae Large' as separate top-level "
+            "items ARE separate items. But if 'Small' and 'Large' appear under a single "
+            "'Sundae' item's variations array, it is ONE item with variations.\n\n"
             f"MARKET: {market}\n"
             f"SPECIAL REQUESTS: {special_requests or 'None'}\n\n"
             f"There are {len(bytes_list)} menu source file(s) above. "
             "Analyze ALL of them against this catalog. "
-            "Grade every catalog item for your assigned dimension. Return ONLY valid JSON."
+            "Grade every catalog item for your assigned dimension. Return ONLY valid JSON.\n\n"
+            "REMINDER: Do NOT report issues unless you are 100% certain after verifying "
+            "against the catalog JSON above. False positives are unacceptable."
         ),
     })
     return content
@@ -580,8 +616,7 @@ async def grade_menu_multipass(
                         all_issues.append(text)
                     elif conf == "likely":
                         all_issues.append(f"[likely] {text}")
-                    else:
-                        all_issues.append(f"[potential] {text}")
+                    # Drop "potential" (1-of-3) issues — too unreliable
                     seen_issues.add(text)
 
         item_grades.append({
@@ -608,7 +643,7 @@ async def grade_menu_multipass(
 
     for grade in item_grades:
         for issue_text in grade["issues"]:
-            clean = issue_text.replace("[likely] ", "").replace("[potential] ", "")
+            clean = issue_text.replace("[likely] ", "")
             lower = clean.lower()
             if "title case" in lower or "capitaliz" in lower or "spelling" in lower:
                 summary["capitalization_errors"].append({"item": grade["item_name"], "issue": clean})
