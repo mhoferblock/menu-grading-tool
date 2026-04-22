@@ -121,13 +121,29 @@ export const api = {
     },
   },
   uploads: {
-    menu: async (file: File) => {
+    menu: async (files: File | File[]) => {
       const form = new FormData();
-      form.append('file', file);
+      const fileList = Array.isArray(files) ? files : [files];
+      for (const f of fileList) {
+        form.append('files', f);
+      }
       const res = await fetch(`${BASE_URL}/uploads/menu`, { method: 'POST', body: form });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: res.statusText }));
         throw new Error(err.detail || 'Menu upload failed');
+      }
+      const json = await res.json();
+      return json.data;
+    },
+    menuUrl: async (url: string) => {
+      const res = await fetch(`${BASE_URL}/uploads/menu-url`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || 'URL fetch failed');
       }
       const json = await res.json();
       return json.data;

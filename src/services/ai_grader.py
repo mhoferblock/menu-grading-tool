@@ -58,9 +58,15 @@ NEATNESS CRITERIA (score 0-100):
 - No use of the word 'or' in item names
 - Context included in names (e.g., 'Chocolate Shake' not just 'Chocolate')
 
+CRITICAL — IGNORE THESE (NOT issues):
+- Square catalog handles/slugs (strings starting with # like #brownie- or #cake-pop-chocolate-cake-po) are internal system identifiers, NOT display names. Do NOT flag them for capitalization, title case, or formatting.
+- Token/handle columns from the catalog export are machine-generated. Only evaluate the human-readable item_name/display name field.
+- If an item name starts with '#' and uses kebab-case, it is a catalog handle — skip it entirely or use the display name from another field.
+
 For EACH catalog item, provide:
 - A neatness score (0-100)
 - A list of neatness-specific issues found (empty array if none)
+- Each issue should be a SINGLE clear sentence describing ONE specific problem
 
 Respond with ONLY valid JSON (no markdown, no explanation). Use this structure:
 {
@@ -73,6 +79,8 @@ Grade EVERY catalog item. Do not skip any."""
 
 ORGANIZATION_PROMPT = _SHARED_CONTEXT + """
 YOU ARE THE ORGANIZATION AGENT. Your ONLY job is to evaluate organization for every catalog item.
+
+IMPORTANT: Catalog handles/slugs (strings starting with # like #brownie- or #cake-pop-chocolate-cake-po) are internal system identifiers. Use the human-readable display name, not the handle.
 
 ORGANIZATION CRITERIA (score 0-100):
 - Variations are correct and ordered (smallest to largest, cheapest to most expensive)
@@ -100,6 +108,8 @@ Grade EVERY catalog item. Do not skip any."""
 
 ACCURACY_PROMPT = _SHARED_CONTEXT + """
 YOU ARE THE ACCURACY AGENT. Your ONLY job is to evaluate accuracy for every catalog item.
+
+IMPORTANT: Catalog handles/slugs (strings starting with # like #brownie- or #cake-pop-chocolate-cake-po) are internal system identifiers. Use the human-readable display name, not the handle.
 
 ACCURACY CRITERIA (score 0-100):
 - Price matching: compare EVERY menu price to catalog/Square price, flag discrepancies
@@ -140,6 +150,8 @@ Grade EVERY catalog item. Do not skip any."""
 
 THOROUGHNESS_PROMPT = _SHARED_CONTEXT + """
 YOU ARE THE THOROUGHNESS AGENT. Your ONLY job is to evaluate thoroughness for every catalog item.
+
+IMPORTANT: Catalog handles/slugs (strings starting with # like #brownie- or #cake-pop-chocolate-cake-po) are internal system identifiers. Use the human-readable display name, not the handle.
 
 THOROUGHNESS CRITERIA (score 0-100):
 - Completeness: are all menu items present in the catalog?
@@ -204,24 +216,44 @@ def _parse_json_response(text: str) -> dict:
 
 
 def _build_content_blocks(
-    menu_bytes: bytes, file_type: str, catalog_items: list[dict],
-    market: str, special_requests: str,
+    menu_bytes: bytes | list[bytes],
+    file_type: str | list[str],
+    catalog_items: list[dict],
+    market: str,
+    special_requests: str,
 ) -> list[dict]:
-    """Build the shared content blocks (menu file + catalog text) reused by every agent call."""
-    media_type = MEDIA_MAP.get(file_type, "application/pdf")
-    b64_data = base64.standard_b64encode(menu_bytes).decode("utf-8")
+    """Build the shared content blocks (menu files + catalog text) reused by every agent call.
 
+    Supports single or multiple menu files.
+    """
     content: list[dict] = []
-    if file_type == "pdf":
-        content.append({
-            "type": "document",
-            "source": {"type": "base64", "media_type": media_type, "data": b64_data},
-        })
-    else:
-        content.append({
-            "type": "image",
-            "source": {"type": "base64", "media_type": media_type, "data": b64_data},
-        })
+
+    bytes_list = menu_bytes if isinstance(menu_bytes, list) else [menu_bytes]
+    types_list = file_type if isinstance(file_type, list) else [file_type]
+
+    if len(types_list) < len(bytes_list):
+        types_list = types_list + [types_list[-1]] * (len(bytes_list) - len(types_list))
+
+    for i, (mbytes, ftype) in enumerate(zip(bytes_list, types_list)):
+        if ftype == "html":
+            text_content = mbytes.decode("utf-8", errors="replace")[:50000]
+            content.append({
+                "type": "text",
+                "text": f"MENU SOURCE (webpage HTML, file {i + 1} of {len(bytes_list)}):\n{text_content}",
+            })
+        else:
+            media_type = MEDIA_MAP.get(ftype, "application/pdf")
+            b64_data = base64.standard_b64encode(mbytes).decode("utf-8")
+            if ftype == "pdf":
+                content.append({
+                    "type": "document",
+                    "source": {"type": "base64", "media_type": media_type, "data": b64_data},
+                })
+            else:
+                content.append({
+                    "type": "image",
+                    "source": {"type": "base64", "media_type": media_type, "data": b64_data},
+                })
 
     catalog_text = json.dumps(catalog_items, indent=2)
     content.append({
@@ -231,7 +263,8 @@ def _build_content_blocks(
             f"{catalog_text}\n\n"
             f"MARKET: {market}\n"
             f"SPECIAL REQUESTS: {special_requests or 'None'}\n\n"
-            "Analyze the menu document/image above against this catalog. "
+            f"There are {len(bytes_list)} menu source file(s) above. "
+            "Analyze ALL of them against this catalog. "
             "Grade every catalog item for your assigned dimension. Return ONLY valid JSON."
         ),
     })
@@ -243,6 +276,25 @@ def _normalize_item_name(name: str) -> str:
     return name.strip().lower()
 
 
+def _extract_issue_key(text: str) -> str:
+    """Extract a canonical key from an issue string for deduplication.
+
+    Maps variations like:
+      "Should be Brownie in Title Case"
+      "Title case error: brownie should be Brownie"
+      "Not in Title Case"
+    all to the same key when they reference the same item.
+    """
+    t = text.strip().lower()
+    t = re.sub(r"\[(?:confirmed|likely|potential)\]\s*", "", t)
+    t = re.sub(r"[^a-z0-9 ]", " ", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    words = set(t.split())
+    noise = {"should", "be", "is", "the", "a", "an", "in", "not", "error", "case", "title", "it"}
+    key_words = sorted(words - noise)
+    return " ".join(key_words) if key_words else t
+
+
 def _fuzzy_issue_match(a: str, b: str) -> bool:
     """Check if two issue strings are describing the same problem."""
     na = a.strip().lower()
@@ -252,6 +304,17 @@ def _fuzzy_issue_match(a: str, b: str) -> bool:
     shorter, longer = (na, nb) if len(na) <= len(nb) else (nb, na)
     if len(shorter) > 10 and shorter in longer:
         return True
+    ka = _extract_issue_key(a)
+    kb = _extract_issue_key(b)
+    if ka and kb and ka == kb:
+        return True
+    if ka and kb:
+        sa = set(ka.split())
+        sb = set(kb.split())
+        if sa and sb:
+            overlap = len(sa & sb) / max(len(sa), len(sb))
+            if overlap >= 0.6:
+                return True
     return False
 
 

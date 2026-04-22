@@ -41,11 +41,14 @@ async def ai_grade_menu(body: GradeRequest, request: Request):
     if not upload:
         raise HTTPException(status_code=404, detail="Menu upload not found. Please re-upload the menu file.")
 
-    menu_bytes = upload.get("_contents")
+    menu_bytes = upload.get("_all_contents") or upload.get("_contents")
     if not menu_bytes:
         raise HTTPException(status_code=400, detail="Menu file data is missing.")
+    if not isinstance(menu_bytes, list):
+        menu_bytes = [menu_bytes]
 
-    file_type = upload.get("file_type", "pdf")
+    file_types = upload.get("_file_types") or [upload.get("file_type", "pdf")]
+    file_type = file_types
     grader_email = getattr(request.state, "user_email", "unknown@squareup.com")
 
     try:

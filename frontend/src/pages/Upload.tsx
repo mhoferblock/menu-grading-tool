@@ -8,6 +8,8 @@ import {
   X,
   AlertCircle,
   CheckCircle,
+  Globe,
+  FileUp,
 } from 'lucide-react';
 import { api } from '@/api/client';
 import type { Builder, Grader } from '@/types';
@@ -79,10 +81,12 @@ export default function Upload() {
   const [market, setMarket] = useState('US');
   const [catalogFile, setCatalogFile] = useState<File | null>(null);
 
-  const [menuFile, setMenuFile] = useState<File | null>(null);
+  const [menuFiles, setMenuFiles] = useState<File[]>([]);
   const [menuUploading, setMenuUploading] = useState(false);
   const [menuResult, setMenuResult] = useState<UploadResult | null>(null);
   const [menuError, setMenuError] = useState('');
+  const [menuSourceMode, setMenuSourceMode] = useState<'file' | 'url'>('file');
+  const [menuUrl, setMenuUrl] = useState('');
 
   const [catalogLoading, setCatalogLoading] = useState(false);
   const [catalogResult, setCatalogResult] = useState<CatalogResult | null>(null);
@@ -106,13 +110,13 @@ export default function Upload() {
   const selectedBuilder = builders.find((b) => b.id === selectedBuilderId);
   const selectedGrader = graders.find((g) => g.id === selectedGraderId);
 
-  const handleMenuUpload = useCallback(async (file: File) => {
-    setMenuFile(file);
+  const handleMenuUpload = useCallback(async (files: File[]) => {
+    setMenuFiles(files);
     setMenuUploading(true);
     setMenuError('');
     setMenuResult(null);
     try {
-      const result = await api.uploads.menu(file);
+      const result = await api.uploads.menu(files);
       setMenuResult(result);
     } catch (e: unknown) {
       setMenuError(e instanceof Error ? e.message : 'Upload failed');
@@ -120,6 +124,21 @@ export default function Upload() {
       setMenuUploading(false);
     }
   }, []);
+
+  const handleMenuUrlFetch = useCallback(async () => {
+    if (!menuUrl.trim()) return;
+    setMenuUploading(true);
+    setMenuError('');
+    setMenuResult(null);
+    try {
+      const result = await api.uploads.menuUrl(menuUrl.trim());
+      setMenuResult(result);
+    } catch (e: unknown) {
+      setMenuError(e instanceof Error ? e.message : 'Failed to fetch URL');
+    } finally {
+      setMenuUploading(false);
+    }
+  }, [menuUrl]);
 
   const handleCatalogUpload = useCallback(async (file: File) => {
     setCatalogFile(file);
@@ -137,9 +156,10 @@ export default function Upload() {
   }, []);
 
   const clearMenu = () => {
-    setMenuFile(null);
+    setMenuFiles([]);
     setMenuResult(null);
     setMenuError('');
+    setMenuUrl('');
   };
 
   const clearCatalog = () => {
@@ -170,11 +190,12 @@ export default function Upload() {
                 <p className="mt-1 text-xs text-[#8A8A8A]">
                   {(menuResult.file_size / 1024).toFixed(1)} KB
                   {menuResult.page_count > 0 && ` · ${menuResult.page_count} page(s)`}
+                  {(menuResult as UploadResult & { file_count?: number }).file_count && (menuResult as UploadResult & { file_count?: number }).file_count! > 1 && ` · ${(menuResult as UploadResult & { file_count?: number }).file_count} files`}
                 </p>
                 <p className="mt-2 text-xs text-[#8A8A8A]">Uploaded successfully</p>
                 <button
                   onClick={clearMenu}
-                  className="mt-3 flex items-center gap-1 rounded-lg border border-[#E5E5E5] bg-[#F6F6F6] px-3 py-1.5 text-xs text-[#8A8A8A] hover:bg-[#F6F6F6]"
+                  className="mt-3 flex items-center gap-1 rounded-lg border border-[#E5E5E5] bg-[#F6F6F6] px-3 py-1.5 text-xs text-[#8A8A8A] hover:bg-[#E5E5E5]"
                 >
                   <X className="h-3 w-3" /> Remove
                 </button>
@@ -182,38 +203,90 @@ export default function Upload() {
             ) : menuUploading ? (
               <div className="flex flex-col items-center rounded-xl border-2 border-dashed border-[#006AFF]/30 py-12 text-center">
                 <Loader2 className="mb-3 h-10 w-10 animate-spin text-[#006AFF]" />
-                <p className="text-sm text-[#4A4A4A]">Uploading {menuFile?.name}...</p>
+                <p className="text-sm text-[#4A4A4A]">
+                  {menuSourceMode === 'url' ? 'Fetching website...' : `Uploading ${menuFiles.length > 1 ? `${menuFiles.length} files` : menuFiles[0]?.name}...`}
+                </p>
               </div>
             ) : (
-              <div
-                className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#E5E5E5] py-12 text-center hover:border-[#006AFF]/30"
-                onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const file = e.dataTransfer.files?.[0];
-                  if (file) handleMenuUpload(file);
-                }}
-              >
-                <UploadIcon className="mb-3 h-10 w-10 text-[#8A8A8A]" />
-                <p className="text-sm text-[#4A4A4A]">Drop PDF or image of physical menu</p>
-                <label className="mt-4 cursor-pointer rounded-lg border border-[#E5E5E5] bg-[#F6F6F6] px-4 py-2 text-sm font-medium text-[#4A4A4A] hover:bg-[#F6F6F6]">
-                  Browse Files
-                  <input
-                    type="file"
-                    accept=".pdf,.png,.jpg,.jpeg"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleMenuUpload(file);
+              <div className="space-y-3">
+                {/* Tab toggle: File vs URL */}
+                <div className="flex gap-1 rounded-lg bg-[#F6F6F6] p-1">
+                  <button
+                    onClick={() => setMenuSourceMode('file')}
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      menuSourceMode === 'file' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#8A8A8A] hover:text-[#4A4A4A]'
+                    }`}
+                  >
+                    <FileUp className="h-3.5 w-3.5" /> Upload Files
+                  </button>
+                  <button
+                    onClick={() => setMenuSourceMode('url')}
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      menuSourceMode === 'url' ? 'bg-white text-[#1A1A1A] shadow-sm' : 'text-[#8A8A8A] hover:text-[#4A4A4A]'
+                    }`}
+                  >
+                    <Globe className="h-3.5 w-3.5" /> Website URL
+                  </button>
+                </div>
+
+                {menuSourceMode === 'file' ? (
+                  <div
+                    className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#E5E5E5] py-10 text-center hover:border-[#006AFF]/30 transition-colors"
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const files = Array.from(e.dataTransfer.files || []);
+                      if (files.length) handleMenuUpload(files);
                     }}
-                  />
-                </label>
-                <p className="mt-3 text-xs text-[#8A8A8A]">
-                  Supports PDF, PNG, JPG. OCR + AI extraction for scanned menus.
-                </p>
+                  >
+                    <UploadIcon className="mb-3 h-10 w-10 text-[#8A8A8A]" />
+                    <p className="text-sm text-[#4A4A4A]">Drop PDF or images of the menu</p>
+                    <p className="mt-1 text-xs text-[#8A8A8A]">Multiple files supported for multi-page menus</p>
+                    <label className="mt-4 cursor-pointer rounded-lg border border-[#E5E5E5] bg-[#F6F6F6] px-4 py-2 text-sm font-medium text-[#4A4A4A] hover:bg-[#E5E5E5] transition-colors">
+                      Browse Files
+                      <input
+                        type="file"
+                        accept=".pdf,.png,.jpg,.jpeg"
+                        multiple
+                        className="hidden"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          if (files.length) handleMenuUpload(files);
+                        }}
+                      />
+                    </label>
+                    <p className="mt-3 text-xs text-[#8A8A8A]">
+                      PDF, PNG, JPG — up to 10 files, 25 MB each
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <input
+                        type="url"
+                        placeholder="https://restaurant.com/menu"
+                        value={menuUrl}
+                        onChange={(e) => setMenuUrl(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleMenuUrlFetch()}
+                        className="flex-1 rounded-lg border border-[#E5E5E5] bg-[#F6F6F6] px-3 py-2 text-sm text-[#1A1A1A] placeholder-[#8A8A8A] focus:border-[#006AFF] focus:ring-2 focus:ring-[#006AFF]/10 focus:outline-none"
+                      />
+                      <button
+                        onClick={handleMenuUrlFetch}
+                        disabled={!menuUrl.trim()}
+                        className="rounded-lg bg-[#006AFF] px-4 py-2 text-sm font-medium text-white hover:bg-[#0056CC] disabled:opacity-50 transition-colors"
+                      >
+                        Fetch
+                      </button>
+                    </div>
+                    <p className="text-xs text-[#8A8A8A]">
+                      Paste a link to the restaurant's online menu. We'll fetch and analyze the page.
+                    </p>
+                  </div>
+                )}
+
                 {menuError && (
-                  <div className="mt-3 flex items-center gap-1.5 text-xs text-[#E02B1D]">
+                  <div className="flex items-center gap-1.5 text-xs text-[#E02B1D]">
                     <AlertCircle className="h-3.5 w-3.5" /> {menuError}
                   </div>
                 )}
